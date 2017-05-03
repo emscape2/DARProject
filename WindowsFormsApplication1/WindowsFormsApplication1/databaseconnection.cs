@@ -20,6 +20,12 @@ new SQLiteConnection("Data Source=" + location + ";Version=3;");
 
     }
 
+    public static DatabaseConnection CreateEmptyDb(string location)
+    {
+        SQLiteConnection.CreateFile(location);
+        return new DatabaseConnection(location);
+
+    }
 
     public int getKey(string table, string id)
     {

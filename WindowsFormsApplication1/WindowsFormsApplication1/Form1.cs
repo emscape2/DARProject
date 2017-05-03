@@ -90,9 +90,13 @@ namespace WindowsFormsApplication1
                 }
 
             }
-            else
+            else if (File.Exists(textBox1.Text))
             {
                 connect_To_Sql(textBox1.Text);
+            }
+            else
+            {
+                connection = DatabaseConnection.CreateEmptyDb(textBox1.Text);
             }
         }
 
