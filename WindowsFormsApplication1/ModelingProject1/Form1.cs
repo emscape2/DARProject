@@ -26,7 +26,7 @@ namespace WindowsFormsApplication1
 
         private void button2_Click_1(object sender, System.EventArgs e)
         {
-            if (textBox2.Text == "")
+            if (textBox2.Text != "")
             {
 
                 Stream myStream = null;
@@ -84,6 +84,8 @@ namespace WindowsFormsApplication1
                 openFileDialog1.Filter = "db files (*.db)|*.db|All files (*.*)|*.*";
                 openFileDialog1.FilterIndex = 2;
                 openFileDialog1.RestoreDirectory = true;
+
+
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 {
                     connect_To_Sql(openFileDialog1.FileName);
@@ -96,7 +98,7 @@ namespace WindowsFormsApplication1
             }
             else
             {
-                connection = DatabaseConnection.CreateEmptyDb(textBox1.Text);
+                connection = DatabaseConnection.CreateEmptyDb(textBox1.Text);   
             }
         }
 
