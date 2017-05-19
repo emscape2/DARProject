@@ -11,7 +11,7 @@ using System.Text;
 
 public class Table
 {
-	public virtual Row[] Rows
+	public Row[] Rows
 	{
 		get;
 		set;
@@ -20,13 +20,13 @@ public class Table
 	/// <summary>
 	/// Column type definition
 	/// </summary>
-	public virtual String[] Columns
+	public String[] Columns
 	{
 		get;
 		set;
 	}
 
-	public virtual Row Row
+	public Row Row
 	{
 		get;
 		set;

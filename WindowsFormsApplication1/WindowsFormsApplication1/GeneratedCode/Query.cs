@@ -11,5 +11,6 @@ using System.Text;
 
 public class Query
 {
+    Dictionary<string, object> requiredValues;
 }
 
