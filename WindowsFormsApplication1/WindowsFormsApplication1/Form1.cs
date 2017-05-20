@@ -45,18 +45,7 @@ namespace WindowsFormsApplication1
                             using (myStream)
                             {
                                 StreamReader reader = new StreamReader(myStream);
-                                string rawSql = reader.ReadToEnd();
-                                //TODO refractoring needed create table code moet in tableProcessor de pre-processor moet de stream afhandelen
-                                using (SQLiteConnection objConnection = TableProccessor.connection.m_dbConnection)
-                                {
-                                    using (SQLiteCommand objCommand = objConnection.CreateCommand())
-                                    {
-                                        objConnection.Open();
-                                        objCommand.CommandText = rawSql;
-                                        objCommand.ExecuteNonQuery();
-                                        objConnection.Close();
-                                    }
-                                }
+                                PreProcessor.ProcessTables(reader);
                             }
                         }
                     }

@@ -36,7 +36,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\OMGProject\OMGProject\BenchmarkingFramework\BenchmarkingFramework\bin\System.Data.SQLite.dll</HintPath>
+      <HintPath>..\..\..\..\Visual Studio 2015\Projects\OMGProject\OMGProject\BenchmarkingFramework\BenchmarkingFramework\bin\System.Data.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -64,15 +64,19 @@
     </Compile>
     <Compile Include="GeneratedCode\MetaDbFiller.cs" />
     <Compile Include="GeneratedCode\PreProcessor.cs" />
-    <Compile Include="GeneratedCode\Query.cs" />
+    <Compile Include="GeneratedCode\SQLQuery.cs" />
     <Compile Include="GeneratedCode\Row.cs" />
     <Compile Include="GeneratedCode\Table.cs" />
-    <Compile Include="GeneratedCode\TableCreator.cs" />
     <Compile Include="GeneratedCode\TableProccessor.cs" />
     <Compile Include="GeneratedCode\WorkloadParser.cs" />
     <Compile Include="GeneratedCode\WorkloadProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Structs\ColumnProperties.cs" />
+    <Compile Include="Structs\DbRow.cs" />
+    <Compile Include="Structs\Query.cs" />
+    <Compile Include="Structs\QueryAttribute.cs" />
+    <Compile Include="Structs\Table.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

@@ -37,6 +37,20 @@ new SQLiteConnection("Data Source=" + location + ";Version=3;");
         return getKey(table, "id");
     }
 
+    public void CreateTable(string rawSql)
+    {
+        //TODO testen of alle statements ingevuld worden
+        using (SQLiteConnection objConnection = TableProccessor.connection.m_dbConnection)
+        {
+            using (SQLiteCommand objCommand = objConnection.CreateCommand())
+            {
+                objConnection.Open();
+                objCommand.CommandText = rawSql;
+                objCommand.ExecuteNonQuery();
+                objConnection.Close();
+            }
+        }
+    }
 
     /// <summary>
     /// create a DataTable containing results of the query, if the DB is opened

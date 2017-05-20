@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 
-namespace RankedQueriesProject
-{
 	///<summary>
 	/// Stores the Attributes desired by the query, could be done as implementation of a List containting QueryAttributes
 	/// </summary>
@@ -28,4 +26,3 @@ namespace RankedQueriesProject
             K = 10;
         }
 	}
-}

@@ -9,14 +9,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-
+using System.Data.SQLite;
 public class PreProcessor
 {
-    public static void ProcessTables(StreamReader Tables)
+    public static void ProcessTables(StreamReader reader)
     {
-        string all = Tables.ReadToEnd();
-        all.Replace("\n", "");
-        string[] lines = all.Split(';');
+
+        string rawSql = reader.ReadToEnd();
+        //TODO refractoring needed create table code moet in tableProcessor de pre-processor moet de stream afhandelen
+        TableProccessor.CreateAndFillTable(rawSql);
     }
 
 	public static void ProcessQuerys(StreamReader Workload)

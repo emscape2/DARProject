@@ -16,9 +16,11 @@ public class TableProccessor
     public static Dictionary<string, ColumnProperties> ColumnProperties = new Dictionary<string, ColumnProperties>();
     private static DataTable table = null;
 
-    public static void CreateAndFillTable(string[] sql)
+
+
+    public static void CreateAndFillTable(string sql)
     {
-        
+        connection.CreateTable(sql);
     }
 
     public static DataTable RetrieveTable()
