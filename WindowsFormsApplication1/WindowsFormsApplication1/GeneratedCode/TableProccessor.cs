@@ -11,7 +11,7 @@ using System.Text;
 
 public class TableProccessor
 {
-	public virtual void Process(object Table table)
+	public virtual void Process(Table table)
 	{
 		throw new System.NotImplementedException();
 	}
