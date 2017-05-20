@@ -9,22 +9,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-
+using System.Data.SQLite;
 public class PreProcessor
 {
-    public static void ProcessTables(StreamReader Tables)
+    public static void ProcessTables(StreamReader reader)
     {
-        string all = Tables.ReadToEnd();
-        all.Replace("\n", "");
-        string[] lines = all.Split(';');
-        TableCreator.CreateTable(lines[0]);
-        TableCreator.FillTable((List<string>)lines.Reverse().Take(lines.Length - 1));
+
+        string rawSql = reader.ReadToEnd();
+        //TODO refractoring needed create table code moet in tableProcessor de pre-processor moet de stream afhandelen
+        TableProccessor.CreateAndFillTable(rawSql);
     }
 
 	public static void ProcessQuerys(StreamReader Workload)
 	{
         string temp = Workload.ReadToEnd();
-        Query[] queries = WorkloadParser.Parse(temp);
+        SQLQuery[] queries = WorkloadParser.Parse(temp);
         WorkloadProcessor.Process(queries);
 	}
 

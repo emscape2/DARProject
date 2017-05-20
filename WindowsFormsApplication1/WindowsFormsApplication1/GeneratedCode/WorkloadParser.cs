@@ -11,44 +11,133 @@ using System.Text;
 
 public class WorkloadParser
 {
-	public static Query[] Parse( String Workload)
+
+    
+    /// <summary>
+    /// parses the entire workload
+    /// </summary>
+    /// <param name="Workload"></param>
+    /// <returns></returns>
+	public static SQLQuery[] Parse( String Workload)
 	{
         return Parse(Workload.Split('\n'));
 	}
 
-    public static Query[] Parse(String[] Workload)
+    /// <summary>
+    /// parses the entire workload
+    /// </summary>
+    /// <param name="Workload"></param>
+    /// <returns></returns>
+    public static SQLQuery[] Parse(String[] Workload)
     {
-        return null;
+        var toreturn = new List<SQLQuery>();
+        for (int i = 2; i < Workload.Length; i++)
+        {
+            SQLQuery sqlQuery = ParseLine(Workload[i]);
+            toreturn.Add(sqlQuery);
+
+        }
+        return toreturn.ToArray();
     }
 
-    private static Query ParseQuery(ref string query)
+    /// <summary>
+    /// parses a single sql query line
+    /// </summary>
+    /// <param name="sql"></param>
+    /// <returns></returns>
+    private static SQLQuery ParseLine(string sql)
     {
-        Query QueryToDo = new Query();
-        query = query.TrimEnd(';');
-        foreach (string str in query.Split(','))
+        SQLQuery toReturn = new SQLQuery();
+        int times = Convert.ToInt32(sql.Split(' ')[0]);
+        //record times in workload
+        //neem alles achter "WHERE" 
+        string[] separator = new string[] { "WHERE" };
+        string everything = sql.Split(separator, StringSplitOptions.None)[1];
+        //split op "AND"
+        separator = new string[] { "AND" };
+        string[] and = everything.Split(separator, StringSplitOptions.None);
+        //switch op "IN" en "="
+        
+        List<string> ins = new List<string>();
+        List<string> isses = new List<string>();
+        foreach (string str in and)
         {
-            string[] attribute = str.Split('=');
-            attribute[0] = attribute[0].Replace(" ", ""); // .Trim?
-            attribute[1] = attribute[1].Replace(" ", ""); // .Trim?
-            attribute[1] = attribute[1].Replace("'", ""); // .Trim?
-            if (attribute[0] == "k")
+            if (str.Contains("IN"))
             {
-                QueryToDo.K = Convert.ToInt32(attribute[1]);
-                continue;
+                ins.Add(str);
             }
             else
             {
-                // determine whether attribute should be set to numeric or not
-                double valueDouble;
-                if (double.TryParse(attribute[1], out valueDouble))
-                {
-                    QueryToDo.requiredValues.Add(attribute[0], valueDouble);
-                }
-                QueryToDo.requiredValues.Add(attribute[0], attribute[1]);
+                isses.Add(str);
             }
         }
+        separator = new string[] { "IN" };
+        foreach (string str in ins)
+        {
+            string[] In = str.Split(separator, StringSplitOptions.None);
+            string column = In[0];
+            column = column.Replace(" ", string.Empty);
+            
 
-        return QueryToDo;
+            object[] desiredValues;
+            int l = str.IndexOf("(");
+            string values;
+            values = str.Substring(l + 1, str.Length - (2 + l));
+            desiredValues = values.Split(',');
+
+            //retrieve the properties of any column and thereby determine the data type
+            
+            ColumnProperties columnPorperties = new ColumnProperties();
+            if (TableProccessor.ColumnProperties.ContainsKey(column))
+            {
+                columnPorperties = TableProccessor.ColumnProperties[column];//search for columnproperties first
+            }
+
+            if (columnPorperties.numerical)
+            {
+                for(int i = 0; i < desiredValues.Length; i++)
+                {
+                    desiredValues[i] = Convert.ToDecimal(desiredValues[i]);
+                }
+            }
+
+            toReturn.requiredValues.Add(column, desiredValues);
+
+
+        }
+
+        foreach (string str in isses)
+        {
+            string[] Is = str.Split('=');
+            string column = Is[0];
+            column = column.Replace(" ", string.Empty);
+            Is[1] = Is[1].Replace(" ", string.Empty);
+            Is[1] = Is[1].Replace("'", string.Empty);
+
+            object[] desiredValues = new object[1];
+            desiredValues[0] = Is[1];
+
+            //retrieve the properties of column and determine datatype
+            ColumnProperties columnPorperties = new ColumnProperties();
+            if (TableProccessor.ColumnProperties.ContainsKey(column))
+            {
+                columnPorperties = TableProccessor.ColumnProperties[column];//search for columnproperties first
+            }
+
+            if (columnPorperties.numerical)
+            {
+                desiredValues[0] = Convert.ToDecimal(desiredValues[0]);
+            }
+
+            toReturn.requiredValues.Add(column, desiredValues);
+
+        }
+
+        toReturn.times = times;
+        return toReturn;
+
     }
+
+
 }
 

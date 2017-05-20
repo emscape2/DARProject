@@ -11,7 +11,6 @@ namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
     {
-        public DatabaseConnection connection;
 
         public Form1()
         {
@@ -46,18 +45,7 @@ namespace WindowsFormsApplication1
                             using (myStream)
                             {
                                 StreamReader reader = new StreamReader(myStream);
-                                string rawSql = reader.ReadToEnd();
-
-                                using (SQLiteConnection objConnection = connection.m_dbConnection)
-                                {
-                                    using (SQLiteCommand objCommand = objConnection.CreateCommand())
-                                    {
-                                        objConnection.Open();
-                                        objCommand.CommandText = rawSql;
-                                        objCommand.ExecuteNonQuery();
-                                        objConnection.Close();
-                                    }
-                                }
+                                PreProcessor.ProcessTables(reader);
                             }
                         }
                     }
@@ -69,7 +57,7 @@ namespace WindowsFormsApplication1
             }
             else
             {
-                connection.QueryDatabase(textBox2.Text, false);
+                TableProccessor.connection.QueryDatabase(textBox2.Text, false);
             }
         }
     
@@ -96,13 +84,13 @@ namespace WindowsFormsApplication1
             }
             else
             {
-                connection = DatabaseConnection.CreateEmptyDb(textBox1.Text);
+                TableProccessor.connection = DatabaseConnection.CreateEmptyDb(textBox1.Text);
             }
         }
 
         private void connect_To_Sql(string dir)
         {
-            connection = new DatabaseConnection(dir);
+            TableProccessor.connection = new DatabaseConnection(dir);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

@@ -7,14 +7,68 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Data;
 
 public class TableProccessor
 {
-	public virtual void Process(Table table)
+
+    public static DatabaseConnection connection;
+    public static Dictionary<string, ColumnProperties> ColumnProperties = new Dictionary<string, ColumnProperties>();
+    private static DataTable table = null;
+
+
+
+    public static void CreateAndFillTable(string sql)
+    {
+        connection.CreateTable(sql);
+    }
+
+    public static DataTable RetrieveTable()
+    {
+        if (!(table == null))
+            return table;
+
+        table = connection.QueryForDataTable("SELECT * FROM autompg");
+        return table;
+    }
+    
+    public static void Process(Table table)
 	{
 		throw new System.NotImplementedException();
 	}
+    
+    /// <summary>
+    /// Fixes all the columnProperties from the database
+    /// </summary>
+    public static void CalculateColumnProperties()
+    {
+        List<string> columnNames = new List<string>();
 
+        DataTable tableInfo = connection.QueryForDataTable("PRAGMA table_info('autompg')");
+        foreach (DataRow row in tableInfo.Rows)
+        {
+            columnNames.Add((string)row[tableInfo.Columns[1]]);
+        }
+
+        for (int i = 0; i < tableInfo.Rows.Count; i++)
+        {
+            bool numerical;
+            DataRow row = tableInfo.Rows[i];
+            if (row[tableInfo.Columns[2]].ToString().ToLower().Contains("text"))
+            {
+                numerical = false;
+            }
+            //integer values hebben altijd weinig mogelijkheden
+            else if (row[tableInfo.Columns[2]].ToString().ToLower().Contains("integer"))
+            {
+                numerical = false;
+            }
+            else
+            {
+                numerical = true;
+            }
+            ColumnProperties.Add(columnNames[i], new ColumnProperties(numerical, columnNames[i]));
+        }
+    }
 }
 

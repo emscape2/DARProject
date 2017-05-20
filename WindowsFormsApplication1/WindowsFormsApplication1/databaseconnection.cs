@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.SQLite;
-using System.IO;
-using System.Windows.Forms;
+using System.Data;
 
 public class DatabaseConnection
 {
@@ -41,6 +37,48 @@ new SQLiteConnection("Data Source=" + location + ";Version=3;");
         return getKey(table, "id");
     }
 
+    public void CreateTable(string rawSql)
+    {
+        //TODO testen of alle statements ingevuld worden
+        using (SQLiteConnection objConnection = TableProccessor.connection.m_dbConnection)
+        {
+            using (SQLiteCommand objCommand = objConnection.CreateCommand())
+            {
+                objConnection.Open();
+                objCommand.CommandText = rawSql;
+                objCommand.ExecuteNonQuery();
+                objConnection.Close();
+            }
+        }
+    }
+
+    /// <summary>
+    /// create a DataTable containing results of the query, if the DB is opened
+    /// </summary>
+    /// <param name="query"></param>
+    public  DataTable QueryForDataTable(string query)
+    {
+        DataTable dataTable = new DataTable();
+        SQLiteCommand command = new SQLiteCommand(query, m_dbConnection);
+        SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter(command);
+        dataAdapter.Fill(dataTable);
+        return dataTable;
+    }
+
+    /// <summary>
+    /// processes a batch of non-read queries
+    /// </summary>
+    /// <param name="sqls"></param>
+    public  void ProcessQueries(List<string> sqls)
+    {
+        int rowsAffected = 0;
+        foreach (var sql in sqls)
+        {
+            SQLiteCommand cmd = m_dbConnection.CreateCommand();
+            cmd.CommandText = sql;
+            rowsAffected += cmd.ExecuteNonQuery();
+        }
+    }
 
 
     public object[] QueryDatabase(string query, bool isReadQuery)
