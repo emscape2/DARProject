@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-	public struct Table
+	public struct SQLTable
 	{
 		public List<DbRow> Rows;
 		public List<string> Columns;

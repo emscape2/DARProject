@@ -13,12 +13,21 @@ public class WorkloadParser
 {
 
     
-
+    /// <summary>
+    /// parses the entire workload
+    /// </summary>
+    /// <param name="Workload"></param>
+    /// <returns></returns>
 	public static SQLQuery[] Parse( String Workload)
 	{
         return Parse(Workload.Split('\n'));
 	}
 
+    /// <summary>
+    /// parses the entire workload
+    /// </summary>
+    /// <param name="Workload"></param>
+    /// <returns></returns>
     public static SQLQuery[] Parse(String[] Workload)
     {
         var toreturn = new List<SQLQuery>();
@@ -31,6 +40,11 @@ public class WorkloadParser
         return toreturn.ToArray();
     }
 
+    /// <summary>
+    /// parses a single sql query line
+    /// </summary>
+    /// <param name="sql"></param>
+    /// <returns></returns>
     private static SQLQuery ParseLine(string sql)
     {
         SQLQuery toReturn = new SQLQuery();
@@ -71,8 +85,23 @@ public class WorkloadParser
             values = str.Substring(l + 1, str.Length - (2 + l));
             desiredValues = values.Split(',');
 
-            //TODO somehow retrieve the properties of ccolumns and determine the data type
-            toReturn.requiredValues.Add(column, desiredValues);//desiredvalues is dus altijd string ATM
+            //retrieve the properties of any column and thereby determine the data type
+            
+            ColumnProperties columnPorperties = new ColumnProperties();
+            if (TableProccessor.ColumnProperties.ContainsKey(column))
+            {
+                columnPorperties = TableProccessor.ColumnProperties[column];//search for columnproperties first
+            }
+
+            if (columnPorperties.numerical)
+            {
+                for(int i = 0; i < desiredValues.Length; i++)
+                {
+                    desiredValues[i] = Convert.ToDecimal(desiredValues[i]);
+                }
+            }
+
+            toReturn.requiredValues.Add(column, desiredValues);
 
 
         }
@@ -86,6 +115,20 @@ public class WorkloadParser
             Is[1] = Is[1].Replace("'", string.Empty);
 
             object[] desiredValues = new object[1];
+            desiredValues[0] = Is[1];
+
+            //retrieve the properties of column and determine datatype
+            ColumnProperties columnPorperties = new ColumnProperties();
+            if (TableProccessor.ColumnProperties.ContainsKey(column))
+            {
+                columnPorperties = TableProccessor.ColumnProperties[column];//search for columnproperties first
+            }
+
+            if (columnPorperties.numerical)
+            {
+                desiredValues[0] = Convert.ToDecimal(desiredValues[0]);
+            }
+
             toReturn.requiredValues.Add(column, desiredValues);
 
         }

@@ -17,8 +17,6 @@ public class PreProcessor
         string all = Tables.ReadToEnd();
         all.Replace("\n", "");
         string[] lines = all.Split(';');
-        TableCreator.CreateTable(lines[0]);
-        TableCreator.FillTable((List<string>)lines.Reverse().Take(lines.Length - 1));
     }
 
 	public static void ProcessQuerys(StreamReader Workload)
