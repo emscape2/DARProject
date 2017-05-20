@@ -11,21 +11,23 @@ using System.Text;
 
 public class TableCreator
 {
-	public virtual  DatabaseConnection dbConnection
+    public static Table table;
+
+	public static DatabaseConnection dbConnection
 	{
 		get;
 		set;
 	}
 
-	public virtual Table FillTable(string[] Sql)
+	public static Table FillTable(List<string> Sql)
 	{
 		throw new System.NotImplementedException();
 	}
 
-	public virtual void CreateTable(string table)
+	public static void CreateTable(string table)
 	{
-		throw new System.NotImplementedException();
-	}
+        throw new System.NotImplementedException();
+    }
 
 }
 

@@ -62,6 +62,15 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="GeneratedCode\MetaDbFiller.cs" />
+    <Compile Include="GeneratedCode\PreProcessor.cs" />
+    <Compile Include="GeneratedCode\Query.cs" />
+    <Compile Include="GeneratedCode\Row.cs" />
+    <Compile Include="GeneratedCode\Table.cs" />
+    <Compile Include="GeneratedCode\TableCreator.cs" />
+    <Compile Include="GeneratedCode\TableProccessor.cs" />
+    <Compile Include="GeneratedCode\WorkloadParser.cs" />
+    <Compile Include="GeneratedCode\WorkloadProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

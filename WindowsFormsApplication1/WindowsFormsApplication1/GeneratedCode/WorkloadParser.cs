@@ -11,15 +11,44 @@ using System.Text;
 
 public class WorkloadParser
 {
-	public static Query Parse( String Workload)
+	public static Query[] Parse( String Workload)
 	{
-		throw new System.NotImplementedException();
+        return Parse(Workload.Split('\n'));
 	}
 
-	public static Query Parse( String[] Workload)
-	{
-		throw new System.NotImplementedException();
-	}
+    public static Query[] Parse(String[] Workload)
+    {
+        return null;
+    }
 
+    private static Query ParseQuery(ref string query)
+    {
+        Query QueryToDo = new Query();
+        query = query.TrimEnd(';');
+        foreach (string str in query.Split(','))
+        {
+            string[] attribute = str.Split('=');
+            attribute[0] = attribute[0].Replace(" ", ""); // .Trim?
+            attribute[1] = attribute[1].Replace(" ", ""); // .Trim?
+            attribute[1] = attribute[1].Replace("'", ""); // .Trim?
+            if (attribute[0] == "k")
+            {
+                QueryToDo.K = Convert.ToInt32(attribute[1]);
+                continue;
+            }
+            else
+            {
+                // determine whether attribute should be set to numeric or not
+                double valueDouble;
+                if (double.TryParse(attribute[1], out valueDouble))
+                {
+                    QueryToDo.requiredValues.Add(attribute[0], valueDouble);
+                }
+                QueryToDo.requiredValues.Add(attribute[0], attribute[1]);
+            }
+        }
+
+        return QueryToDo;
+    }
 }
 

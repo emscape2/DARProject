@@ -11,7 +11,7 @@ using System.Text;
 
 public class Row
 {
-	public virtual Dictionary<String, Value> Values
+	public virtual Dictionary<String, object> Values
 	{
 		get;
 		set;

@@ -11,5 +11,7 @@ using System.Text;
 
 public class Query
 {
+    public Dictionary<string, object> requiredValues;
+    public int times;
 }
 
