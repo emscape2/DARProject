@@ -24,7 +24,7 @@ public class PreProcessor
 	public static void ProcessQuerys(StreamReader Workload)
 	{
         string temp = Workload.ReadToEnd();
-        Query[] queries = WorkloadParser.Parse(temp);
+        SQLQuery[] queries = WorkloadParser.Parse(temp);
         WorkloadProcessor.Process(queries);
 	}
 

@@ -16,7 +16,7 @@ public class WorkloadProcessor
 		throw new System.NotImplementedException();
 	}
 
-	public static void Process(Query[] Workload)
+	public static void Process(SQLQuery[] Workload)
 	{
 		throw new System.NotImplementedException();
 	}

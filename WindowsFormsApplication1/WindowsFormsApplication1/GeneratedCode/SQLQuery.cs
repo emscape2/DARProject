@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-public class Query
+public class SQLQuery
 {
-    public Dictionary<string, object> requiredValues;
+    public Dictionary<string, object[]> requiredValues;
     public int times;
 }
 
