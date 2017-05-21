@@ -37,7 +37,7 @@ new SQLiteConnection("Data Source=" + location + ";Version=3;");
         return getKey(table, "id");
     }
 
-    public void CreateTable(string rawSql)
+    public void runCreationSql(string rawSql)
     {
         //TODO testen of alle statements ingevuld worden
         using (SQLiteConnection objConnection = TableProccessor.connection.m_dbConnection)

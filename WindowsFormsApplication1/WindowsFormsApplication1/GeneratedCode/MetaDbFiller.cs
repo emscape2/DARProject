@@ -11,22 +11,11 @@ using System.Text;
 
 public class MetaDbFiller
 {
-    public Table table;
-	
-
-public List<Table> MetaTable;
+    
+    
 
     public DatabaseConnection dbConnection;
-
-	public  void PostQF(int table, decimal[,] Qfs)
-	{
-		throw new System.NotImplementedException();
-	}
-
-	public  void CreateMetaTable( Table MetaTable)
-	{
-		throw new System.NotImplementedException();
-	}
+    
 
 }
 
