@@ -3,9 +3,9 @@
 	/// </summary>
 	public struct ColumnProperties
 	{
-        public bool numerical;
+        public bool? numerical;
         public string name;
-        public ColumnProperties(bool numerkal, string naam)
+        public ColumnProperties(bool? numerkal, string naam)
         {
             numerical = numerkal;
             name = naam;

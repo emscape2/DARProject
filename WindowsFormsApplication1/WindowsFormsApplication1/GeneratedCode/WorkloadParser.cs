@@ -93,7 +93,7 @@ public class WorkloadParser
                 columnPorperties = TableProccessor.ColumnProperties[column];//search for columnproperties first
             }
 
-            if (columnPorperties.numerical)
+            if (columnPorperties.numerical != null && columnPorperties.numerical.Value)
             {
                 for(int i = 0; i < desiredValues.Length; i++)
                 {
@@ -124,7 +124,7 @@ public class WorkloadParser
                 columnPorperties = TableProccessor.ColumnProperties[column];//search for columnproperties first
             }
 
-            if (columnPorperties.numerical)
+            if (columnPorperties.numerical != null && columnPorperties.numerical.Value)
             {
                 desiredValues[0] = Convert.ToDecimal(desiredValues[0]);
             }

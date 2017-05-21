@@ -17,9 +17,16 @@ public class PreProcessor
 
         string rawSql = reader.ReadToEnd();
         TableProccessor.CreateAndFillTable(rawSql);
+        LoadTableAndPreprocess();
         TableProccessor.Process();
     }
     
+    public static void LoadTableAndPreprocess()
+    {
+
+        TableProccessor.RetrieveTable();
+        TableProccessor.CalculateColumnProperties();
+    }
 
 	public static void ProccessWorkload(StreamReader Workload)
 	{

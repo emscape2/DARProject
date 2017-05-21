@@ -24,12 +24,10 @@ public class TableProccessor
     public static void CreateAndFillTable(string sql)
     {
         connection.runCreationSql(sql);
-        RetrieveTable();
-        CalculateColumnProperties();
     }
 
     /// <summary>
-    /// retrieves the autompg table
+    /// retrieves the autompg table, not sure yetif needed, but here it is anyways.
     /// </summary>
     /// <returns></returns>
     public static DataTable RetrieveTable()
@@ -47,8 +45,60 @@ public class TableProccessor
     /// <param name="table"></param>
     public static void Process()
 	{
-		throw new System.NotImplementedException();
+        //voor iedere column check if numerical
+        foreach (var column in ColumnProperties)
+        {
+            if (column.Value.numerical.Value)
+            {
+                int max = 0; 
+                Dictionary<string,int> Dfs = GetDfsForText(column.Key, ref max);
+                throw new NotImplementedException("from DF and maxx to idf has yet to be implemented");
+                // implement idf
+                //write to table in metadb
+            }
+            else
+            {
+                Dictionary<decimal, decimal> Idfs = getIdfsForNumerical(column.Key);
+                // write to table in metadb
+            }
+        }
+
+
 	}
+
+    //gets a dictionary from value to amount of occurrences and max occurrences
+    public static Dictionary<string, int> GetDfsForText(string columname, ref int max)
+    {
+        Dictionary<string, int> DFs = new Dictionary<string, int>();
+
+        //grouped column values so the sqlite takes over the workload, might come at hand when extending this
+        DataTable column = connection.QueryForDataTable("SELECT "+ columname + " FROM autompg  GROUPBY " + columname);
+        int j = 1;
+        string lastvalue = "";
+        for (int i = 0; i <column.Rows.Count; i++)
+        {
+            if ((string)column.Rows[i][columname] == lastvalue)
+            {
+                j++;
+            }
+            else if (i > 0)
+            {
+                DFs.Add((string)column.Rows[i - 1][columname], j);
+                if (j > max)
+                    max = j;
+                j = 1;
+            }
+        }
+        return DFs;
+    }
+
+
+    public static Dictionary<decimal, decimal> getIdfsForNumerical(string columname)
+    {
+
+        throw new NotImplementedException();
+    }
+
     
     /// <summary>
     /// Fixes all the columnProperties from the database
@@ -65,7 +115,7 @@ public class TableProccessor
 
         for (int i = 0; i < tableInfo.Rows.Count; i++)
         {
-            bool numerical;
+            bool? numerical;
             DataRow row = tableInfo.Rows[i];
             if (row[tableInfo.Columns[2]].ToString().ToLower().Contains("text"))
             {
@@ -74,7 +124,7 @@ public class TableProccessor
             //integer values hebben altijd weinig mogelijkheden, 
             else if (row[tableInfo.Columns[2]].ToString().ToLower().Contains("integer"))
             {
-                numerical = true;//mag voor integers tot n bepaald limiet false/ of een speciale waarde zijn
+                numerical = null;//mag voor integers tot n bepaald limiet false/ of een speciale waarde zijn
             }
             else
             {
@@ -83,5 +133,7 @@ public class TableProccessor
             ColumnProperties.Add(columnNames[i], new ColumnProperties(numerical, columnNames[i]));
         }
     }
+    
 }
+
 
