@@ -17,12 +17,21 @@ public class TableProccessor
     private static DataTable table = null;
 
 
-
+    /// <summary>
+    /// creates and filles a table according to the raw sql supplied
+    /// </summary>
+    /// <param name="sql"></param>
     public static void CreateAndFillTable(string sql)
     {
-        connection.CreateTable(sql);
+        connection.runCreationSql(sql);
+        RetrieveTable();
+        CalculateColumnProperties();
     }
 
+    /// <summary>
+    /// retrieves the autompg table
+    /// </summary>
+    /// <returns></returns>
     public static DataTable RetrieveTable()
     {
         if (!(table == null))
@@ -32,7 +41,11 @@ public class TableProccessor
         return table;
     }
     
-    public static void Process(Table table)
+    /// <summary>
+    /// should calculate the idf values and tell the metaDbFiller to fill the metaDB
+    /// </summary>
+    /// <param name="table"></param>
+    public static void Process()
 	{
 		throw new System.NotImplementedException();
 	}
@@ -58,10 +71,10 @@ public class TableProccessor
             {
                 numerical = false;
             }
-            //integer values hebben altijd weinig mogelijkheden
+            //integer values hebben altijd weinig mogelijkheden, 
             else if (row[tableInfo.Columns[2]].ToString().ToLower().Contains("integer"))
             {
-                numerical = false;
+                numerical = true;//mag voor integers tot n bepaald limiet false/ of een speciale waarde zijn
             }
             else
             {

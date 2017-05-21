@@ -11,11 +11,12 @@ using System.Text;
 
 public class WorkloadProcessor
 {
-	public static int[] GetTableDimensioins(int tableId, int ColumnId)
-	{
-		throw new System.NotImplementedException();
-	}
+    
 
+    /// <summary>
+    /// here the QF similarities should be calculated
+    /// </summary>
+    /// <param name="Workload"></param>
 	public static void Process(SQLQuery[] Workload)
 	{
 		throw new System.NotImplementedException();

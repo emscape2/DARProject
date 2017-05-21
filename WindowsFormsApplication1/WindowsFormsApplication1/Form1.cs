@@ -22,9 +22,14 @@ namespace WindowsFormsApplication1
 
         }
 
-
+        /// <summary>
+        /// either runs the sql statement in the chatbox or loads in the .sql statement file chosen from the windows file system
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button2_Click_1(object sender, System.EventArgs e)
         {
+            //if text is empty open file dialog
             if (textBox2.Text == "")
             {
 
@@ -56,12 +61,16 @@ namespace WindowsFormsApplication1
                 }
             }
             else
-            {
+            {//is not used for exercise but could come of use for testing purposes
                 TableProccessor.connection.QueryDatabase(textBox2.Text, false);
             }
         }
-    
 
+        /// <summary>
+        /// either creates an empty db or opens a db
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             if (textBox1.Text == "")
@@ -100,6 +109,43 @@ namespace WindowsFormsApplication1
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+        }
+        /// <summary>
+        /// loads workload
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.InitialDirectory = "c:\\";
+            openFileDialog1.Filter = "All files (*.*)|*.*";
+            openFileDialog1.RestoreDirectory = true; if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    Stream myStream;
+                    if ((myStream = openFileDialog1.OpenFile()) != null)
+                    {
+                        using (myStream)
+                        {
+                            StreamReader reader = new StreamReader(myStream);
+                            PreProcessor.ProccessWorkload(reader);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
+
 
         }
     }

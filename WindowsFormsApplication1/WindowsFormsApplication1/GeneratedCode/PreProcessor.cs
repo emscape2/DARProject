@@ -16,11 +16,12 @@ public class PreProcessor
     {
 
         string rawSql = reader.ReadToEnd();
-        //TODO refractoring needed create table code moet in tableProcessor de pre-processor moet de stream afhandelen
         TableProccessor.CreateAndFillTable(rawSql);
+        TableProccessor.Process();
     }
+    
 
-	public static void ProcessQuerys(StreamReader Workload)
+	public static void ProccessWorkload(StreamReader Workload)
 	{
         string temp = Workload.ReadToEnd();
         SQLQuery[] queries = WorkloadParser.Parse(temp);
