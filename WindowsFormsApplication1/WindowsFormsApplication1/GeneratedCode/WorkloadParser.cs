@@ -86,14 +86,11 @@ public class WorkloadParser
             desiredValues = values.Split(',');
 
             //retrieve the properties of any column and thereby determine the data type
-            
-            ColumnProperties columnPorperties = new ColumnProperties();
-            if (TableProccessor.ColumnProperties.ContainsKey(column))
-            {
-                columnPorperties = TableProccessor.ColumnProperties[column];//search for columnproperties first
-            }
 
-            if (columnPorperties.numerical != null && columnPorperties.numerical.Value)
+            ColumnProperties properties = TableProccessor.ColumnProperties[column];
+           
+
+            if (properties.numerical != null && properties.numerical.Value)
             {
                 for(int i = 0; i < desiredValues.Length; i++)
                 {
@@ -118,13 +115,9 @@ public class WorkloadParser
             desiredValues[0] = Is[1];
 
             //retrieve the properties of column and determine datatype
-            ColumnProperties columnPorperties = new ColumnProperties();
-            if (TableProccessor.ColumnProperties.ContainsKey(column))
-            {
-                columnPorperties = TableProccessor.ColumnProperties[column];//search for columnproperties first
-            }
+            ColumnProperties properties = TableProccessor.ColumnProperties[column];
 
-            if (columnPorperties.numerical != null && columnPorperties.numerical.Value)
+            if (properties.numerical != null && properties.numerical.Value)
             {
                 desiredValues[0] = Convert.ToDecimal(desiredValues[0]);
             }

@@ -9,13 +9,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 
+
 public class TableProccessor
 {
 
     public static DatabaseConnection connection;
     public static Dictionary<string, ColumnProperties> ColumnProperties = new Dictionary<string, ColumnProperties>();
     private static DataTable table = null;
-
+    private static int numberofRows;
 
     /// <summary>
     /// creates and filles a table according to the raw sql supplied
@@ -36,9 +37,17 @@ public class TableProccessor
             return table;
 
         table = connection.QueryForDataTable("SELECT * FROM autompg");
+        numberofRows = table.Rows.Count;
         return table;
     }
     
+    public static int GetDistinct(string columname)
+    {
+        DataTable count = connection.QueryForDataTable("SELECT COUNT (*) FROM (SELECT DISTINCT " + columname + " FROM autompg)");
+        var temp = count.Rows[0][0];
+        return Convert.ToInt32(temp);
+    }
+
     /// <summary>
     /// should calculate the idf values and tell the metaDbFiller to fill the metaDB
     /// </summary>
@@ -48,18 +57,37 @@ public class TableProccessor
         //voor iedere column check if numerical
         foreach (var column in ColumnProperties)
         {
-            if (column.Value.numerical.Value)
+            if (column.Key.ToLower() == "id")
+                continue;
+
+            column.Value.distinctValues = GetDistinct(column.Key);
+
+            if (!column.Value.numerical.Value)
             {
-                int max = 0; 
+                int max = 0; // we decided to devide by the maximum number of occurrences instead of amount of documents
+                             // because the intention of using IDF is to have the most common terms being log(1) (frequent terms occur in basically any document)
+                              
+                          
                 Dictionary<string,int> Dfs = GetDfsForText(column.Key, ref max);
-                throw new NotImplementedException("from DF and maxx to idf has yet to be implemented");
                 // implement idf
+                double idfDevider = Math.Abs(Math.Log10(1.0d / max));  // to make idf a scalar
+                Dictionary<string, double> IDFS = new Dictionary<string, double>();
+                foreach (var DF in Dfs)
+                {
+                    double idf;
+                    idf = Math.Abs(Math.Log10((double)numberofRows / (double)DF.Value));//kan heel goed door opencl gedaan
+
+                    IDFS.Add(DF.Key, idf);
+                }
+
                 //write to table in metadb
+                MetaDbFiller.createMetaTable(column.Key, IDFS);
             }
             else
             {
-                Dictionary<decimal, decimal> Idfs = getIdfsForNumerical(column.Key);
+                Dictionary<double, double> Idfs = getIdfsForNumerical(column.Key);
                 // write to table in metadb
+                MetaDbFiller.createMetaTable(column.Key, Idfs);
             }
         }
 
@@ -72,10 +100,10 @@ public class TableProccessor
         Dictionary<string, int> DFs = new Dictionary<string, int>();
 
         //grouped column values so the sqlite takes over the workload, might come at hand when extending this
-        DataTable column = connection.QueryForDataTable("SELECT "+ columname + " FROM autompg  GROUPBY " + columname);
+        DataTable column = connection.QueryForDataTable("SELECT " + columname + " FROM autompg  ORDER BY " + columname + " ASC;");
         int j = 1;
         string lastvalue = "";
-        for (int i = 0; i <column.Rows.Count; i++)
+        for (int i = 0; i < column.Rows.Count; i++)
         {
             if ((string)column.Rows[i][columname] == lastvalue)
             {
@@ -83,23 +111,91 @@ public class TableProccessor
             }
             else if (i > 0)
             {
-                DFs.Add((string)column.Rows[i - 1][columname], j);
+                DFs.Add(lastvalue, j);
                 if (j > max)
                     max = j;
                 j = 1;
+                lastvalue = (string)column.Rows[i][columname];
+            }
+            else
+            {
+                lastvalue = (string)column.Rows[i][columname];
             }
         }
         return DFs;
     }
 
-
-    public static Dictionary<decimal, decimal> getIdfsForNumerical(string columname)
+    /// <summary>
+    /// gets the log of the amount of distinct values
+    /// </summary>
+    /// <param name="columname"></param>
+    /// <returns></returns>
+    private static double TryGetIntervalSize(string columname)
     {
+        if (ColumnProperties[columname].GetInterval() == 0)
+        {
+            return GetIntervalSize(columname);
 
-        throw new NotImplementedException();
+        }
+
+        return ColumnProperties[columname].GetInterval();
     }
 
-    
+    public static double GetIntervalSize(string columname)
+    {
+
+        int distinct = ColumnProperties[columname].distinctValues;
+        int intervals = (int)(10.0d * Math.Log(ColumnProperties[columname].distinctValues));//10 * log(distinct) intervals
+        double size = (ColumnProperties[columname].max - ColumnProperties[columname].min) / ((double)(intervals));
+        ColumnProperties[columname].SetInterval(size);
+        return size;
+    }
+
+    public static Dictionary<double, double> getIdfsForNumerical(string columname)
+    {
+        Dictionary<double, double> idfs = new Dictionary<double, double>();
+        //grouped column values so the sqlite takes over the workload, might come at hand when extending this
+        ColumnProperties properties = ColumnProperties[columname];
+        for (double d = properties.min; d < properties.max; d += TryGetIntervalSize(columname))
+        {
+            idfs.Add(d, GetNumeralIdf(columname, d));
+        }
+
+        return idfs;
+    }
+
+    public static double GetNumeralIdf(string columname, double u)
+    {
+        DataTable column = connection.QueryForDataTable("SELECT " + columname + " FROM autompg  ORDER BY " + columname + " ASC;" );
+
+        ColumnProperties properties = ColumnProperties[columname];
+
+        //idf(t) = log (n / d) = log(n) - log(d) 
+        //d = sum of e ^ (-0,5*f) ^ 2
+        //f = (ti -t ) / h 
+        // where (i is the counter of the sum) AND (i E [0,...n]) AND h is the total bandwith
+
+        double d = 0;
+
+        foreach (DataRow row in column.Rows)
+        {
+            //f = (ti -t ) / h 
+            //f = afstand / max mogelijke afstand
+            double f = (Convert.ToDouble(row[columname]) - u) / (properties.max - properties.min);
+            
+            //d = sum of e ^ (-0,5*f) ^ 2
+            double g = Math.Pow(Math.E, (Math.Pow(-0.5 * f, 2)));
+            d += g;
+        }
+
+        //idf(t) = log (n / d) = log(n) - log(d) 
+        //TODO DEZE REGEL HEEFT NOG GEEN CORRECTIE NAAR SCALAR IS WILDE SCHATTING
+        double idf = Math.Sqrt(Math.Abs( (Math.Log10(column.Rows.Count) - Math.Log10(d)))); //TODO: testen of je niet moet delen door log10*columns.rows.count om scalar te krijgen
+
+        return idf;
+    }
+
+
     /// <summary>
     /// Fixes all the columnProperties from the database
     /// </summary>
@@ -116,21 +212,50 @@ public class TableProccessor
         for (int i = 0; i < tableInfo.Rows.Count; i++)
         {
             bool? numerical;
+            double smallest = 0;
+            double largest = 0;
             DataRow row = tableInfo.Rows[i];
             if (row[tableInfo.Columns[2]].ToString().ToLower().Contains("text"))
             {
                 numerical = false;
             }
             //integer values hebben altijd weinig mogelijkheden, 
-            else if (row[tableInfo.Columns[2]].ToString().ToLower().Contains("integer"))
-            {
-                numerical = null;//mag voor integers tot n bepaald limiet false/ of een speciale waarde zijn
-            }
             else
             {
-                numerical = true;
+                if (row[tableInfo.Columns[2]].ToString().ToLower().Contains("integer"))
+                {
+                    numerical = true;//TODO moet voor integers tot n bepaald distinct limiet null zijn
+                    DataTable min = connection.QueryForDataTable("SELECT  " + columnNames[i] + " FROM autompg ORDER BY " + columnNames[i] + " ASC LIMIT 1;");
+                    // select smallest value
+                    var small = min.Rows[0][0];
+                    smallest = Convert.ToDouble(small);
+                    // select largest value
+                    DataTable max = connection.QueryForDataTable("SELECT " + columnNames[i] + " FROM autompg ORDER BY " + columnNames[i] + " DESC LIMIT 1;");
+                    var large = max.Rows[0][0];
+                    largest = Convert.ToDouble(large);
+                }
+                else
+                {
+                    numerical = true;
+                    DataTable min = connection.QueryForDataTable("SELECT  " + columnNames[i] + " FROM autompg ORDER BY " + columnNames[i] + " ASC LIMIT 1;");
+                    // select smallest value
+                    smallest = (double)min.Rows[0][0];
+                    // select largest value
+                    DataTable max = connection.QueryForDataTable("SELECT " + columnNames[i] + " FROM autompg ORDER BY " + columnNames[i] + " DESC LIMIT 1;");
+                    largest = (double)max.Rows[0][0];
+
+                }
             }
-            ColumnProperties.Add(columnNames[i], new ColumnProperties(numerical, columnNames[i]));
+
+
+
+            ColumnProperties.Add(columnNames[i], new ColumnProperties(numerical, columnNames[i])
+            {
+                min = smallest,
+                max = largest
+            }
+            );
+
         }
     }
     
