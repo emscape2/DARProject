@@ -148,5 +148,10 @@ namespace WindowsFormsApplication1
 
 
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            PreProcessor.LoadTableAndPreprocess();
+        }
     }
 }

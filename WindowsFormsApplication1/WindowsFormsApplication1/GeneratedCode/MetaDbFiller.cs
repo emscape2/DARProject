@@ -11,15 +11,16 @@ using System.Text;
 
 public class MetaDbFiller
 {
+    public static Dictionary<string, Object> idfs = new Dictionary<string, object>();
     
-    public static void createMetaTable(string columname, Dictionary<string, double> idfs)
+    public static void createMetaTable(string columname, Dictionary<string, double> iDfs)
     {
-        throw new NotImplementedException();
+        idfs.Add(columname, iDfs);
     }
 
-    public static void createMetaTable(string columname, Dictionary<double, double> idfs)
+    public static void createMetaTable(string columname, Dictionary<double, double> iDfs)
     {
-        throw new NotImplementedException();
+        idfs.Add(columname, iDfs);
     }
 
     public DatabaseConnection dbConnection;
