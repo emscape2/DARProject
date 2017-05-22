@@ -12,7 +12,15 @@ using System.Text;
 public class MetaDbFiller
 {
     
-    
+    public static void createMetaTable(string columname, Dictionary<string, double> idfs)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static void createMetaTable(string columname, Dictionary<double, double> idfs)
+    {
+        throw new NotImplementedException();
+    }
 
     public DatabaseConnection dbConnection;
     
