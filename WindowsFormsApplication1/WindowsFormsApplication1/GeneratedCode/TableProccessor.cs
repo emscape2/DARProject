@@ -74,7 +74,7 @@ public class TableProccessor
                 Dictionary<string, double> IDFS = new Dictionary<string, double>();
                 foreach (var DF in Dfs)
                 {
-                    double idf;
+                    double idf;// TODO Deze berekening geeft nog waarden boven 1 
                     idf = Math.Abs(Math.Log10((double)numberofRows / (double)DF.Value));//kan heel goed door opencl gedaan
 
                     IDFS.Add(DF.Key, idf);
@@ -90,6 +90,7 @@ public class TableProccessor
                 MetaDbFiller.createMetaTable(column.Key, Idfs);
             }
         }
+        throw new NotImplementedException("meta table not yet implemented, check its idf for values");
 
 
 	}
@@ -145,7 +146,7 @@ public class TableProccessor
     {
 
         int distinct = ColumnProperties[columname].distinctValues;
-        int intervals = (int)(10.0d * Math.Log(ColumnProperties[columname].distinctValues));//10 * log(distinct) intervals
+        int intervals = (int)(10.0d * Math.Log(ColumnProperties[columname].distinctValues));//10 * log(distinct) intervals zorgen dat je niet 0 krijgt
         double size = (ColumnProperties[columname].max - ColumnProperties[columname].min) / ((double)(intervals));
         ColumnProperties[columname].SetInterval(size);
         return size;
