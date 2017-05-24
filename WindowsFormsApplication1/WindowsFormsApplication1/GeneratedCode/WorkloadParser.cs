@@ -34,7 +34,8 @@ public class WorkloadParser
         for (int i = 2; i < Workload.Length; i++)
         {
             SQLQuery sqlQuery = ParseLine(Workload[i]);
-            toreturn.Add(sqlQuery);
+            if (sqlQuery != null)
+                toreturn.Add(sqlQuery);
 
         }
         return toreturn.ToArray();
@@ -48,88 +49,99 @@ public class WorkloadParser
     private static SQLQuery ParseLine(string sql)
     {
         SQLQuery toReturn = new SQLQuery();
-        int times = Convert.ToInt32(sql.Split(' ')[0]);
-        //record times in workload
-        //neem alles achter "WHERE" 
-        string[] separator = new string[] { "WHERE" };
-        string everything = sql.Split(separator, StringSplitOptions.None)[1];
-        //split op "AND"
-        separator = new string[] { "AND" };
-        string[] and = everything.Split(separator, StringSplitOptions.None);
-        //switch op "IN" en "="
-        
-        List<string> ins = new List<string>();
-        List<string> isses = new List<string>();
-        foreach (string str in and)
+        try
         {
-            if (str.Contains("IN"))
+            int times = Convert.ToInt32(sql.Split(' ')[0]);
+            //record times in workload
+            //neem alles achter "WHERE" 
+            string[] separator = new string[] { "WHERE" };
+            string everything = sql.Split(separator, StringSplitOptions.None)[1];
+            //split op "AND"
+            separator = new string[] { "AND" };
+            string[] and = everything.Split(separator, StringSplitOptions.None);
+            //switch op "IN" en "="
+
+            List<string> ins = new List<string>();
+            List<string> isses = new List<string>();
+            foreach (string str in and)
             {
-                ins.Add(str);
-            }
-            else
-            {
-                isses.Add(str);
-            }
-        }
-        separator = new string[] { "IN" };
-        foreach (string str in ins)
-        {
-            string[] In = str.Split(separator, StringSplitOptions.None);
-            string column = In[0];
-            column = column.Replace(" ", string.Empty);
-            
-
-            object[] desiredValues;
-            int l = str.IndexOf("(");
-            string values;
-            values = str.Substring(l + 1, str.Length - (2 + l));
-            desiredValues = values.Split(',');
-
-            //retrieve the properties of any column and thereby determine the data type
-
-            ColumnProperties properties = TableProccessor.ColumnProperties[column];
-           
-
-            if (properties.numerical != null && properties.numerical.Value)
-            {
-                for(int i = 0; i < desiredValues.Length; i++)
+                if (str.Contains("IN"))
                 {
-                    desiredValues[i] = Convert.ToDecimal(desiredValues[i]);
+                    ins.Add(str);
+                }
+                else
+                {
+                    isses.Add(str);
                 }
             }
-
-            toReturn.requiredValues.Add(column, desiredValues);
-
-
-        }
-
-        foreach (string str in isses)
-        {
-            string[] Is = str.Split('=');
-            string column = Is[0];
-            column = column.Replace(" ", string.Empty);
-            Is[1] = Is[1].Replace(" ", string.Empty);
-            Is[1] = Is[1].Replace("'", string.Empty);
-
-            object[] desiredValues = new object[1];
-            desiredValues[0] = Is[1];
-
-            //retrieve the properties of column and determine datatype
-            ColumnProperties properties = TableProccessor.ColumnProperties[column];
-
-            if (properties.numerical != null && properties.numerical.Value)
+            separator = new string[] { "IN" };
+            foreach (string str in ins)
             {
-                desiredValues[0] = Convert.ToDecimal(desiredValues[0]);
+                string[] In = str.Split(separator, StringSplitOptions.None);
+                string column = In[0];
+                column = column.Replace(" ", string.Empty);
+
+
+                object[] desiredValues;
+                int l = str.IndexOf("(");
+                string values;
+                values = str.Substring(l + 1, str.Length - (2 + l));
+                desiredValues = values.Split(',');
+
+                //retrieve the properties of any column and thereby determine the data type
+
+                ColumnProperties properties = TableProccessor.ColumnProperties[column];
+
+
+                if (properties.numerical != null && properties.numerical.Value)
+                {
+                    for (int i = 0; i < desiredValues.Length; i++)
+                    {
+                        desiredValues[i] = Convert.ToDecimal(desiredValues[i]);
+                    }
+                }
+
+                toReturn.requiredValues.Add(column, desiredValues);
+
+
             }
 
-            toReturn.requiredValues.Add(column, desiredValues);
+            foreach (string str in isses)
+            {
+                string[] Is = str.Split('=');
+                string column = Is[0];
+                column = column.Replace(" ", string.Empty);
+                Is[1] = Is[1].Replace(" ", string.Empty);
+                Is[1] = Is[1].Replace("'", string.Empty);
+
+                object[] desiredValues = new object[1];
+                desiredValues[0] = Is[1];
+
+                //retrieve the properties of column and determine datatype
+                ColumnProperties properties = TableProccessor.ColumnProperties[column];
+
+                if (properties.numerical != null && properties.numerical.Value)
+                {
+                    desiredValues[0] = Convert.ToDecimal(desiredValues[0]);
+                }
+
+                toReturn.requiredValues.Add(column, desiredValues);
+
+            }
+
+            toReturn.times = times;
+            return toReturn;
 
         }
-
-        toReturn.times = times;
-        return toReturn;
-
-    }
+        catch (FormatException e)
+        {
+            //donothing
+        }
+        finally
+            {
+        }
+        return null;
+        }
 
 
 }

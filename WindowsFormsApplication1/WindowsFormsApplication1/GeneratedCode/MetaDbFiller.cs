@@ -11,8 +11,9 @@ using System.Text;
 
 public class MetaDbFiller
 {
-    public static Dictionary<string, Object> idfs = new Dictionary<string, object>();
-    
+    public static Dictionary<string, object> idfs = new Dictionary<string, object>();
+    public static Dictionary<string, object> qf = new Dictionary<string, object>();
+
     public static void createMetaTable(string columname, Dictionary<string, double> iDfs)
     {
         idfs.Add(columname, iDfs);
@@ -21,6 +22,16 @@ public class MetaDbFiller
     public static void createMetaTable(string columname, Dictionary<double, double> iDfs)
     {
         idfs.Add(columname, iDfs);
+    }
+
+    public static void AddQfMetaTable(string columname, Dictionary<string, double> qfs)
+    {
+        qf.Add(columname, qfs);
+    }
+
+    public static void AddQfMetaTable(string columname, Dictionary<double, double> qfs)
+    {
+        qf.Add(columname, qfs);
     }
 
     public DatabaseConnection dbConnection;

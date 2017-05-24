@@ -90,8 +90,8 @@ public class TableProccessor
                 MetaDbFiller.createMetaTable(column.Key, Idfs);
             }
         }
-        throw new NotImplementedException("meta table not yet implemented, check its idf for values");
-
+        //throw new NotImplementedException("meta table not yet implemented, check its idf for values");
+        int i = 0;
 
 	}
 
@@ -173,25 +173,24 @@ public class TableProccessor
 
         //idf(t) = log (n / d) = log(n) - log(d) 
         //d = sum of e ^ (-0,5*f) ^ 2
-        //f = (ti -t ) / h 
+        //f = (ti -u ) / h 
         // where (i is the counter of the sum) AND (i E [0,...n]) AND h is the total bandwith
 
         double d = 0;
 
         foreach (DataRow row in column.Rows)
         {
-            //f = (ti -t ) / h 
+            //f = (ti -u ) / h 
             //f = afstand / max mogelijke afstand
             double f = (Convert.ToDouble(row[columname]) - u) / (properties.max - properties.min);
             
             //d = sum of e ^ (-0,5*f) ^ 2
-            double g = Math.Pow(Math.E, (Math.Pow(-0.5 * f, 2)));
+            double g = Math.Pow(Math.E, (-0.5 * Math.Pow( f, 2)));
             d += g;
         }
 
-        //idf(t) = log (n / d) = log(n) - log(d) 
-        //TODO DEZE REGEL HEEFT NOG GEEN CORRECTIE NAAR SCALAR IS WILDE SCHATTING
-        double idf = Math.Sqrt(Math.Abs( (Math.Log10(column.Rows.Count) - Math.Log10(d)))); //TODO: testen of je niet moet delen door log10*columns.rows.count om scalar te krijgen
+        //idf(t) = log (n / d) 
+        double idf = Math.Abs( 10 * (Math.Log(column.Rows.Count / d, Math.E))); //TODO: testen of je niet moet delen door log10*columns.rows.count om scalar te krijgen
 
         return idf;
     }

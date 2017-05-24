@@ -11,16 +11,74 @@ using System.Text;
 
 public class WorkloadProcessor
 {
-    
+
 
     /// <summary>
     /// here the QF similarities should be calculated
     /// </summary>
     /// <param name="Workload"></param>
-	public static void Process(SQLQuery[] Workload)
-	{
-		throw new System.NotImplementedException();
-	}
+    public static void Process(SQLQuery[] Workload)
+    {
+
+        foreach (var column in TableProccessor.ColumnProperties)
+        {
+            if (column.Value.numerical != null && !column.Value.numerical.Value)
+            {
+                GetNonNumericalQf(Workload, column.Key);
+            }
+            else
+            {
+                //throw new NotImplementedException();
+            }
+
+        }
+
+
+    }
+
+    public static void GetNonNumericalQf(SQLQuery[] Workload, string columname)
+    {
+        Dictionary<object, int> pairing = new Dictionary<object, int>();
+        List<int> timeDictionary = new List<int>() ;
+        int counter = 0;
+
+        foreach(SQLQuery query in Workload)
+        {
+            if (query.requiredValues.ContainsKey(columname))
+            {
+                object[] values = query.requiredValues[columname];
+                int times = query.times;
+                foreach (var value in values)
+                {
+                    if (!pairing.ContainsKey(value))
+                    {
+                        pairing.Add(value, counter);
+                        timeDictionary.Add(times);
+                        counter++;
+                    }
+                    else
+                    {
+                        int index = pairing[value];
+                        timeDictionary[index] += times;
+                    }
+                    
+                }
+            }
+        }
+        int rqfmax = timeDictionary.Max();
+        Dictionary<string, double> qfs = new Dictionary<string, double>();
+        foreach(var pair in pairing)
+        {
+            double qf = timeDictionary[pair.Value] / rqfmax;
+            qfs.Add(pair.Key.ToString(), qf);
+        }
+
+        MetaDbFiller.AddQfMetaTable(columname, qfs);
+
+    }
+
+
+
 
 }
 
