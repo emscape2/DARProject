@@ -28,7 +28,7 @@ public class WorkloadProcessor
             }
             else
             {
-                //throw new NotImplementedException();
+                GetNumericalQf(Workload, column.Key);
             }
 
         }
@@ -36,7 +36,17 @@ public class WorkloadProcessor
 
     }
 
-    public static void GetNonNumericalQf(SQLQuery[] Workload, string columname)
+    public static void GetNumericalQf(SQLQuery[] Workload, string columname)
+    {
+        double size = TableProccessor.GetIntervalSize(columname);
+        ColumnProperties properties = TableProccessor.ColumnProperties[columname];
+        for(double d /*hehe*/ = properties.min; d < properties.max; d += size)
+        {
+
+        }
+    }
+
+        public static void GetNonNumericalQf(SQLQuery[] Workload, string columname)
     {
         Dictionary<object, int> pairing = new Dictionary<object, int>();
         List<int> timeDictionary = new List<int>() ;
