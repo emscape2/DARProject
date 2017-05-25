@@ -26,7 +26,7 @@ public class WorkloadProcessor
             {
                 GetNonNumericalQf(Workload, column.Key);
             }
-            else
+            else if (column.Value.numerical != null && column.Key != "id")
             {
                 GetNumericalQf(Workload, column.Key);
             }
@@ -36,23 +36,13 @@ public class WorkloadProcessor
 
     }
 
-    public static void GetNumericalQf(SQLQuery[] Workload, string columname)
-    {
-        double size = TableProccessor.GetIntervalSize(columname);
-        ColumnProperties properties = TableProccessor.ColumnProperties[columname];
-        for(double d /*hehe*/ = properties.min; d < properties.max; d += size)
-        {
-
-        }
-    }
-
-        public static void GetNonNumericalQf(SQLQuery[] Workload, string columname)
+    public static void GetNonNumericalQf(SQLQuery[] Workload, string columname)
     {
         Dictionary<object, int> pairing = new Dictionary<object, int>();
-        List<int> timeDictionary = new List<int>() ;
+        List<int> timeDictionary = new List<int>();
         int counter = 0;
 
-        foreach(SQLQuery query in Workload)
+        foreach (SQLQuery query in Workload)
         {
             if (query.requiredValues.ContainsKey(columname))
             {
@@ -71,44 +61,88 @@ public class WorkloadProcessor
                         int index = pairing[value];
                         timeDictionary[index] += times;
                     }
-                    
+
                 }
             }
         }
-        int rqfmax = timeDictionary.Max();
         Dictionary<string, double> qfs = new Dictionary<string, double>();
-        foreach(var pair in pairing)
+        if (timeDictionary.Count == 0)
         {
-            double qf = timeDictionary[pair.Value] / rqfmax;
-            qfs.Add(pair.Key.ToString(), qf);
+            foreach (var entry in (MetaDbFiller.idfs[columname] as Dictionary<string, double>))
+            {
+                qfs.Add(entry.Key, 1.0);
+            }
         }
-
+        else
+        {
+            double rqfmax = (double)timeDictionary.Max();
+            foreach (var pair in pairing)
+            {
+                double qf = timeDictionary[pair.Value] / rqfmax;
+                qfs.Add(pair.Key.ToString(), qf);
+            }
+        }
         MetaDbFiller.AddQfMetaTable(columname, qfs);
 
     }
 
+
+    public static void GetNumericalQf(SQLQuery[] Workload, string columname)
+    {
+        double size = TableProccessor.GetIntervalSize(columname);
+        ColumnProperties properties = TableProccessor.ColumnProperties[columname];
+        List<SQLQuery> relevantQueries = new List<SQLQuery>();
+        int total = 0;
+        foreach(var query in Workload)
+        {
+            if (query.requiredValues.ContainsKey(columname))
+            {
+                relevantQueries.Add(query);
+                total += query.times;
+            }
+        }
+        Dictionary<double, double> Qfs = new Dictionary<double, double>();
+        Dictionary<double, double> RQfs = new Dictionary<double, double>();
+        double RQfMax = 0;
+        for (double d /*bij het ontbijt*/ = properties.min; d <= properties.max; d += size)
+        {
+            double qf = getNumericalQFFromU(d, relevantQueries, columname, total);
+            RQfs.Add(d,qf);
+            if (RQfMax < qf)
+                RQfMax = qf;
+        }
+
+        foreach (var Qf in RQfs)
+            Qfs.Add(Qf.Key, Qf.Value / RQfMax);
+
+        MetaDbFiller.AddQfMetaTable(columname, Qfs);
+
+        relevantQueries = null;
+        GC.Collect();
+    }
+
+
+
     public static double getNumericalQFFromU(double u, List<SQLQuery> Workload, string columname, int n)
     {
-        double ti;
         double qf = 0;
 
         foreach (SQLQuery query in Workload)
         {
             ColumnProperties properties = TableProccessor.ColumnProperties[columname];
             object[] values = query.requiredValues[columname];
-            
+
 
             foreach (var value in values)
             {
-                ti = Convert.ToDouble(value);
-                qf += (-0.5 * (Math.Pow(((ti - u) / properties.max - properties.min), 2) / n));
+                double ti;
+                ti = Convert.ToDouble(value) * query.times;
+                qf += 0.5 * (Math.Pow(((ti - u) / (properties.max - properties.min / 2)), 2)) / n;
             }
         }
-
         return qf;
+
     }
-
-
 
 
 }
