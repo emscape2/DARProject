@@ -26,7 +26,7 @@ public class WorkloadProcessor
             {
                 GetNonNumericalQf(Workload, column.Key);
             }
-            else
+            else if (column.Value.numerical != null)
             {
                 GetNumericalQf(Workload, column.Key);
             }
@@ -40,10 +40,26 @@ public class WorkloadProcessor
     {
         double size = TableProccessor.GetIntervalSize(columname);
         ColumnProperties properties = TableProccessor.ColumnProperties[columname];
-        for(double d /*hehe*/ = properties.min; d < properties.max; d += size)
+        List<SQLQuery> relevantQueries = new List<SQLQuery>();
+        foreach(var query in Workload)
         {
-
+            if (query.requiredValues.ContainsKey(columname))
+            {
+                relevantQueries.Add(query);
+            }
         }
+
+        Dictionary<double, double> Qfs = new Dictionary<double, double>();
+
+        for (double d /*bij het ontbijt*/ = properties.min; d <= properties.max; d += size)
+        {
+            Qfs.Add(d, getNumericalQFFromU(d, relevantQueries, columname));
+        }
+    }
+
+    public static double getNumericalQFFromU(double u, List<SQLQuery> Workload, string columname)
+    {
+        return 0;
     }
 
         public static void GetNonNumericalQf(SQLQuery[] Workload, string columname)

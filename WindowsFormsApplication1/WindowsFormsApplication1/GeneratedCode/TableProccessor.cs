@@ -157,7 +157,7 @@ public class TableProccessor
         Dictionary<double, double> idfs = new Dictionary<double, double>();
         //grouped column values so the sqlite takes over the workload, might come at hand when extending this
         ColumnProperties properties = ColumnProperties[columname];
-        for (double d = properties.min; d < properties.max; d += TryGetIntervalSize(columname))
+        for (double d = properties.min; d <= properties.max; d += TryGetIntervalSize(columname))
         {
             idfs.Add(d, GetNumeralIdf(columname, d));
         }
