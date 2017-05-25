@@ -90,13 +90,13 @@ public class WorkloadProcessor
     public static double getNumericalQFFromU(double u, List<SQLQuery> Workload, string columname, int n)
     {
         double ti;
-        double qf;
+        double qf = 0;
 
         foreach (SQLQuery query in Workload)
         {
             ColumnProperties properties = TableProccessor.ColumnProperties[columname];
             object[] values = query.requiredValues[columname];
-            qf = 0;
+            
 
             foreach (var value in values)
             {
