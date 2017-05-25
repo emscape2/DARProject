@@ -13,6 +13,7 @@ public class MetaDbFiller
 {
     public static Dictionary<string, object> idfs = new Dictionary<string, object>();
     public static Dictionary<string, object> qf = new Dictionary<string, object>();
+    public static Dictionary<string, object> qfIdf = new Dictionary<string, object>();
 
     public static void createMetaTable(string columname, Dictionary<string, double> iDfs)
     {
@@ -27,6 +28,11 @@ public class MetaDbFiller
     public static void AddQfMetaTable(string columname, Dictionary<string, double> qfs)
     {
         qf.Add(columname, qfs);
+    }
+
+    public static void AddQFIDFMetaTable(string columnname, Dictionary<double, double> qfiDFs)
+    {
+        qfIdf.Add(columnname, qfiDFs);
     }
 
     public static void AddQfMetaTable(string columname, Dictionary<double, double> qfs)

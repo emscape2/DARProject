@@ -153,5 +153,24 @@ namespace WindowsFormsApplication1
         {
             PreProcessor.LoadTableAndPreprocess();
         }
+
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Query_Click(object sender, EventArgs e)
+        {
+            string query = textBox3.Text;
+            Proccessor.LoadAndProccesQuery(query);
+            MessageBox.Show(query);
+
+        }
+
+        private void textBox3_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }
