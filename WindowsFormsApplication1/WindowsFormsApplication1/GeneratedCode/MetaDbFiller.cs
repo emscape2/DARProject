@@ -5,9 +5,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq; 
 using System.Text;
+using System.Data.SQLite;
 
 public class MetaDbFiller
 {
@@ -45,8 +47,37 @@ public class MetaDbFiller
         qfIdf.Add(columnname, qfiDFs);
     }
 
+    public static void createMetadb()
+    {
+        SQLiteConnection.CreateFile("metadb.txt");
+    }
+
+    public static void writeCreateStatementsToMetaDB(string[] columnnames) //andere input meegeven
+    {
+        using (StreamWriter writer = new StreamWriter("metadb.txt"))
+        {
+            //foreach column in meegegeven argument, voor elke columnnaam maak je een aparte tabel
+            //met ID, IDF, QF en QFIDF en schrijf je uit naar een metadb.txt
+            string name = columnnames[0];
+            string id = columnnames[1];
+            string type = columnnames[2];
+            string idf = "IDF REAL,";
+            string qf = " QF REAL,";
+            string qfidf = " QFIDF REAL";
+            writer.WriteLine("CREATE TABLE" + " " + name + " " + "( "  + id + " " + type + "," + idf + qf + qfidf + ");");
+        }
+    }
+
+    public static void writeInsertStatementsToMetaDB(string[] columnnames)
+    {
+        using (StreamWriter writer = new StreamWriter("metaload.txt")) //Same story voor writeCreateStamentstoMetaDB, maar nu met insert values
+        {
+            string columnname = columnnames[0];
+            writer.WriteLine("INSERT INTO" + " " + columnname + " " + "VALUES (");
+        }
+    }
+
     public DatabaseConnection dbConnection;
-    
 
 }
 

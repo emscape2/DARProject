@@ -163,7 +163,7 @@ namespace WindowsFormsApplication1
         private void Query_Click(object sender, EventArgs e)
         {
             string query = textBox3.Text;
-            Proccessor.LoadAndProccesQuery(query);
+            //Proccessor.LoadAndProccesQuery(query);
             MessageBox.Show(query);
 
         }
