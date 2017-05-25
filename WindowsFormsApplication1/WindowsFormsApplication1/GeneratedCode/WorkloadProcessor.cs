@@ -87,6 +87,27 @@ public class WorkloadProcessor
 
     }
 
+    public static double getNumericalQFFromU(double u, List<SQLQuery> Workload, string columname, int n)
+    {
+        double ti;
+        double qf;
+
+        foreach (SQLQuery query in Workload)
+        {
+            ColumnProperties properties = TableProccessor.ColumnProperties[columname];
+            object[] values = query.requiredValues[columname];
+            qf = 0;
+
+            foreach (var value in values)
+            {
+                ti = Convert.ToDouble(value);
+                qf += (-0.5 * (Math.Pow(((ti - u) / properties.max - properties.min), 2) / n));
+            }
+        }
+
+        return qf;
+    }
+
 
 
 
