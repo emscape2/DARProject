@@ -195,6 +195,33 @@ public class TableProccessor
         return idf;
     }
 
+    public static double calculateQfIdfNumeral(string columnname, List<SQLQuery> Workload, int n, double u)
+    {
+        double qfidf = 0;
+        double qf = 0;
+        double idf = 0;
+
+        idf = GetNumeralIdf(columnname, u);
+        qf = WorkloadProcessor.getNumericalQFFromU(u, Workload, columnname, n);
+
+        qfidf = idf * qf;
+        return qfidf;
+
+    }
+
+    public static Dictionary<double, double> getQfIdfNumeral(string columnname, List<SQLQuery> Workload, int n, double u)
+    {
+        Dictionary<double, double> qfidf = new Dictionary<double, double>();
+        double value = calculateQfIdfNumeral(columnname, Workload, n, u);
+        ColumnProperties properties = ColumnProperties[columnname];
+
+        for (double d = properties.min; d <= properties.max; d += TryGetIntervalSize(columnname))
+        {
+            qfidf.Add(d, value);
+        }
+        return qfidf;
+    }
+
 
     /// <summary>
     /// Fixes all the columnProperties from the database

@@ -30,14 +30,19 @@ public class MetaDbFiller
         qf.Add(columname, qfs);
     }
 
-    public static void AddQFIDFMetaTable(string columnname, Dictionary<double, double> qfiDFs)
+    public static void AddQfMetaTable(string columname, Dictionary<double, double> qfs)
+    {
+        qf.Add(columname, qfs);
+    }
+
+    public static void AddQFIDFMetaTable(string columnname, Dictionary<string, double> qfiDFs)
     {
         qfIdf.Add(columnname, qfiDFs);
     }
 
-    public static void AddQfMetaTable(string columname, Dictionary<double, double> qfs)
+    public static void AddQFIDFMetaTable(string columnname, Dictionary<double, double> qfiDFs)
     {
-        qf.Add(columname, qfs);
+        qfIdf.Add(columnname, qfiDFs);
     }
 
     public DatabaseConnection dbConnection;
