@@ -22,7 +22,6 @@ public class PreProcessor
     
     public static void LoadTableAndPreprocess()
     {
-
         TableProccessor.RetrieveTable();
         TableProccessor.CalculateColumnProperties();
         TableProccessor.Process();
