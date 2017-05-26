@@ -50,6 +50,21 @@ public class DatabaseConnection
         }
     }
 
+    public void runCreationSqlMeta(string rawSql)
+    {
+        //TODO testen of alle statements ingevuld worden
+        using (SQLiteConnection objConnection = MetaDbFiller.dbConnection.m_dbConnection)
+        {
+            using (SQLiteCommand objCommand = objConnection.CreateCommand())
+            {
+                objConnection.Open();
+                objCommand.CommandText = rawSql;
+                objCommand.ExecuteNonQuery();
+                objConnection.Close();
+            }
+        }
+    }
+
     /// <summary>
     /// create a DataTable containing results of the query, if the DB is opened
     /// </summary>
@@ -92,7 +107,6 @@ public class DatabaseConnection
             int current = 0;
             while (reader.Read())
             {
-
 
                 if (reader.HasRows)
                 {

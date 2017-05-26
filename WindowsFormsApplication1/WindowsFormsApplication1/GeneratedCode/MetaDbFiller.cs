@@ -42,11 +42,8 @@ public class MetaDbFiller
         jacquard.Add(columname, jaquards);
     }
 
-    public static void createMetadb()
-    {
-        SQLiteConnection.CreateFile("metadb.txt");
-    }
 
+    //overbodige code want sqlitestudio
     public static void writeCreateStatementsToMetaDB(string[] columnnames) //andere input meegeven
     {
         using (StreamWriter writer = new StreamWriter("metadb.txt"))
@@ -58,11 +55,11 @@ public class MetaDbFiller
             string type = columnnames[2];
             string idf = "IDF REAL,";
             string qf = " QF REAL,";
-            string qfidf = " QFIDF REAL";
-            writer.WriteLine("CREATE TABLE" + " " + name + " " + "( "  + id + " " + type + "," + idf + qf + qfidf + ");");
+            writer.WriteLine("CREATE TABLE" + " " + name + " " + "( "  + id + " " + type + "," + idf + qf  + ");");
         }
     }
 
+    //overbodige code want sqlitestudio
     public static void writeInsertStatementsToMetaDB(string[] columnnames)
     {
         using (StreamWriter writer = new StreamWriter("metaload.txt")) //Same story voor writeCreateStamentstoMetaDB, maar nu met insert values
@@ -72,7 +69,16 @@ public class MetaDbFiller
         }
     }
 
-    public DatabaseConnection dbConnection;
+    public static DatabaseConnection dbConnection;
+
+    public static void createMetadb(string[] createStatements)
+    {
+        for (int i = 0; i < createStatements.Length; i++)
+        {
+            string sql = createStatements[i];
+            dbConnection.runCreationSqlMeta(sql);
+        }
+    }
 
 }
 
