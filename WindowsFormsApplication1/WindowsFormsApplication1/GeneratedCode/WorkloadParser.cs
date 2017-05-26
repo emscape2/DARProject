@@ -77,15 +77,18 @@ public class WorkloadParser
             separator = new string[] { "IN" };
             foreach (string str in ins)
             {
-                string[] In = str.Split(separator, StringSplitOptions.None);
+                string tmp = str;
+                tmp = tmp.Replace(")", string.Empty);
+                tmp = tmp.Replace("\r", string.Empty);
+                tmp = tmp.Replace("'", string.Empty);
+                string[] In = tmp.Split(separator, StringSplitOptions.None);
                 string column = In[0];
                 column = column.Replace(" ", string.Empty);
 
-
                 object[] desiredValues;
-                int l = str.IndexOf("(");
+                int l = tmp.IndexOf("(");
                 string values;
-                values = str.Substring(l + 1, str.Length - (2 + l));
+                values = tmp.Substring(l + 1, tmp.Length - (1 + l));
                 desiredValues = values.Split(',');
 
                 //retrieve the properties of any column and thereby determine the data type
@@ -111,6 +114,8 @@ public class WorkloadParser
                 string[] Is = str.Split('=');
                 string column = Is[0];
                 column = column.Replace(" ", string.Empty);
+                column = column.Replace("\n", string.Empty);
+                column = column.Replace("\r", string.Empty);
                 Is[1] = Is[1].Replace(" ", string.Empty);
                 Is[1] = Is[1].Replace("'", string.Empty);
 

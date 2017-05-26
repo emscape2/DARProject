@@ -33,6 +33,7 @@ public class PreProcessor
         string temp = Workload.ReadToEnd();
         SQLQuery[] queries = WorkloadParser.Parse(temp);
         WorkloadProcessor.Process(queries);
+        
 	}
 
 }

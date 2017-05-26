@@ -24,7 +24,8 @@ public class WorkloadProcessor
         {
             if (column.Value.numerical != null && !column.Value.numerical.Value)
             {
-                GetNonNumericalQf(Workload, column.Key);
+                GetNonNumericalQfs(Workload, column.Key);
+                GetJaquards(Workload, column.Key);
             }
             else if (column.Value.numerical != null && column.Key != "id")
             {
@@ -36,7 +37,80 @@ public class WorkloadProcessor
 
     }
 
-    public static void GetNonNumericalQf(SQLQuery[] Workload, string columname)
+    public static void GetJaquards(SQLQuery[] Workload, string columname)
+    {
+        bool useful = false;
+        foreach (var query in Workload)
+        {
+            if (!useful && query.requiredValues.ContainsKey(columname) && query.requiredValues[columname].Length > 1)
+            {
+                useful = true;
+                break;
+            }
+        }
+        
+        if (! useful)
+        {
+            return;
+        }
+        
+        List<SQLQuery> relevantQueries = new List<SQLQuery>();
+        foreach (var query in Workload)
+        {
+            if (query.requiredValues.ContainsKey(columname))
+            {
+                relevantQueries.Add(query);
+            }
+        }
+
+        Dictionary<string, object> jaquards = new Dictionary<string, object>();
+        foreach(var idf in MetaDbFiller.idfs[columname] as Dictionary<string, double>)
+        {
+            Dictionary<string, double> jaquard = new Dictionary<string, double>();
+            foreach(var idf2 in MetaDbFiller.idfs[columname] as Dictionary<string, double>)
+            {
+                jaquard.Add(idf2.Key, Jaquard(relevantQueries, idf.Key, idf2.Key, columname));
+            }
+            jaquards.Add(idf.Key,jaquard);
+        }
+
+
+        MetaDbFiller.AddJaquardsMetaTable(columname, jaquards);
+    }
+
+    
+
+    public static double Jaquard(List<SQLQuery> relevant, string term1, string term2, string columname)
+    {
+        int union = 0, intersection = 0;
+        if (term1 == term2)
+            return 1;
+
+        foreach (var query in relevant)
+        {
+            if (query.requiredValues[columname].Contains(term1))
+            {
+                union += query.times ;
+                if (query.requiredValues[columname].Contains(term2))
+                    intersection += query.times;
+
+            }
+            else if (query.requiredValues[columname].Contains(term2))
+            {
+                union += query.times;
+            }
+        }
+
+        if (union > 0 && intersection == 0)
+        {
+            return 0;
+        }
+
+        return (double)intersection / (double)union ;
+    }
+
+
+    public static void GetNonNumericalQfs(SQLQuery[] Workload, string columname)
     {
         Dictionary<object, int> pairing = new Dictionary<object, int>();
         List<int> timeDictionary = new List<int>();
