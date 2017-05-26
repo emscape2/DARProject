@@ -75,8 +75,9 @@ public class TableProccessor
                 foreach (var DF in Dfs)
                 {
                     double idf;// TODO Deze berekening geeft nog waarden boven 1 
+                    
                     idf = Math.Abs(Math.Log10((double)numberofRows / (double)DF.Value));//kan heel goed door opencl gedaan
-
+                    
                     IDFS.Add(DF.Key, idf);
                 }
 
