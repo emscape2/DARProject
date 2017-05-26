@@ -50,6 +50,11 @@ public class DatabaseConnection
         }
     }
 
+    public void runCreationSqlMeta(string rawSql)
+    {
+        runCreationSql(rawSql);
+    }
+
     /// <summary>
     /// create a DataTable containing results of the query, if the DB is opened
     /// </summary>
@@ -92,7 +97,6 @@ public class DatabaseConnection
             int current = 0;
             while (reader.Read())
             {
-
 
                 if (reader.HasRows)
                 {

@@ -195,6 +195,9 @@ namespace WindowsFormsApplication1
             {
                 MetaDbFiller.dbConnection = DatabaseConnection.CreateEmptyDb(textBox5.Text);
             }
+
+            MetaDbFiller.CreateMetaTables();
+            MetaDbFiller.FillMetaDb();
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
