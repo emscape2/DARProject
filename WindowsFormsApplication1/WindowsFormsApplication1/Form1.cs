@@ -175,6 +175,7 @@ namespace WindowsFormsApplication1
         {
             if (textBox5.Text == "")
             {
+
                 OpenFileDialog openFileDialog1 = new OpenFileDialog();
                 openFileDialog1.InitialDirectory = "c:\\";
                 openFileDialog1.Filter = "db files (*.db)|*.db|All files (*.*)|*.*";
@@ -182,6 +183,7 @@ namespace WindowsFormsApplication1
                 openFileDialog1.RestoreDirectory = true;
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 {
+                    connect_To_SqlMeta(openFileDialog1.FileName);
                 }
 
             }
