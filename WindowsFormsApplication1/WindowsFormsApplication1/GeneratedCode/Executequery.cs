@@ -4,15 +4,17 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Data.SQLite;
+using System.Data;
 
 namespace WindowsFormsApplication1.GeneratedCode
 {
     class Executequery
     {
-
-        public static void Execute(SQLQuery[] query)
+        public static void Execute(string query, string nameDatabase)
         {
-            double t = 0;
+            DatabaseConnection database = new DatabaseConnection(nameDatabase);
+            DataTable result = database.QueryForDataTable(query);
         }
+
     }
 }

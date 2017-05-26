@@ -163,7 +163,6 @@ namespace WindowsFormsApplication1
         private void Query_Click(object sender, EventArgs e)
         {
             string query = textBox3.Text;
-            //Proccessor.LoadAndProccesQuery(query);
             MessageBox.Show(query);
 
         }
@@ -171,6 +170,18 @@ namespace WindowsFormsApplication1
         private void textBox3_TextChanged_1(object sender, EventArgs e)
         {
 
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            string ceq = textBox4.Text;
+            Proccessor.LoadAndProccessCeq(ceq);
+            MessageBox.Show(ceq);
         }
     }
 }
