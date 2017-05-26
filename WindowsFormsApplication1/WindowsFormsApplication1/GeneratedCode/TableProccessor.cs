@@ -81,13 +81,13 @@ public class TableProccessor
                 }
 
                 //write to table in metadb
-                MetaDbFiller.createMetaTable(column.Key, IDFS);
+                MetaDbFiller.IdfMetaTable(column.Key, IDFS);
             }
             else
             {
                 Dictionary<double, double> Idfs = getIdfsForNumerical(column.Key);
                 // write to table in metadb
-                MetaDbFiller.createMetaTable(column.Key, Idfs);
+                MetaDbFiller.IdfMetaTable(column.Key, Idfs);
             }
         }
         //throw new NotImplementedException("meta table not yet implemented, check its idf for values");
@@ -194,7 +194,7 @@ public class TableProccessor
 
         return idf;
     }
-
+    /*
     public static double calculateQfIdfNumeral(string columnname, List<SQLQuery> Workload, int n, double u)
     {
         double qfidf = 0;
@@ -221,7 +221,7 @@ public class TableProccessor
         }
         return qfidf;
     }
-
+    */
 
     /// <summary>
     /// Fixes all the columnProperties from the database

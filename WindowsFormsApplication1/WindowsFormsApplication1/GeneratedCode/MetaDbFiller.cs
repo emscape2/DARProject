@@ -15,14 +15,14 @@ public class MetaDbFiller
 {
     public static Dictionary<string, object> idfs = new Dictionary<string, object>();
     public static Dictionary<string, object> qf = new Dictionary<string, object>();
-    public static Dictionary<string, object> qfIdf = new Dictionary<string, object>();
+    public static Dictionary<string, object> jacquard = new Dictionary<string, object>();
 
-    public static void createMetaTable(string columname, Dictionary<string, double> iDfs)
+    public static void IdfMetaTable(string columname, Dictionary<string, double> iDfs)
     {
         idfs.Add(columname, iDfs);
     }
 
-    public static void createMetaTable(string columname, Dictionary<double, double> iDfs)
+    public static void IdfMetaTable(string columname, Dictionary<double, double> iDfs)
     {
         idfs.Add(columname, iDfs);
     }
@@ -36,15 +36,10 @@ public class MetaDbFiller
     {
         qf.Add(columname, qfs);
     }
-
-    public static void AddQFIDFMetaTable(string columnname, Dictionary<string, double> qfiDFs)
+    
+    public static void AddJaquardsMetaTable(string columname, Dictionary<string, object> jaquards)
     {
-        qfIdf.Add(columnname, qfiDFs);
-    }
-
-    public static void AddQFIDFMetaTable(string columnname, Dictionary<double, double> qfiDFs)
-    {
-        qfIdf.Add(columnname, qfiDFs);
+        jacquard.Add(columname, jaquards);
     }
 
     public static void createMetadb()
