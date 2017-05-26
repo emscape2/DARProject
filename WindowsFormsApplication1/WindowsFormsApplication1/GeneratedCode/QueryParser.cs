@@ -5,14 +5,14 @@ using System.Text;
 using System.IO;
 using System.Data.SQLite;
 
-namespace WindowsFormsApplication1.GeneratedCode
+namespace WindowsFormsApplication1
 {
     class QueryParser
     {
 
-        public static Dictionary<string, object> parseInput(string ceq)
+        public static Dictionary<string, string> parseInput(string ceq)
         {
-            Dictionary<string, object> input = new Dictionary<string, object>();
+            Dictionary<string, string> input = new Dictionary<string, string>();
             string[] seperator = new string[] { "," };
             string[] attributes = ceq.Split(seperator, StringSplitOptions.None);
 

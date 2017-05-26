@@ -11,7 +11,7 @@ namespace WindowsFormsApplication1
 
         public static void LoadAndProccessCeq(String ceq)
         {
-            Dictionary<string, object> parsedCeq = QueryParser.parseInput(ceq);
+            Dictionary<string, string> parsedCeq = QueryParser.parseInput(ceq);
         }
 
         public static void Execute(string query, string nameDatabase)

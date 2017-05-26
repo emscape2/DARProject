@@ -6,7 +6,7 @@ using System.IO;
 using System.Data.SQLite;
 using System.Data;
 
-namespace WindowsFormsApplication1.GeneratedCode
+namespace WindowsFormsApplication1
 {
     class Executequery
     {
