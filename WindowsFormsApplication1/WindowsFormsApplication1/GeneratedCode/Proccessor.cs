@@ -4,19 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WindowsFormsApplication1.GeneratedCode
+namespace WindowsFormsApplication1
 {
     public class Proccessor
     {
 
-        public static void LoadAndProccessQuery(String Query)
+        public static void LoadAndProccessCeq(String ceq)
         {
-            Query parsedQuery = QueryParser.Parse(Query);
+            Dictionary<string, string> parsedCeq = QueryParser.parseInput(ceq);
         }
 
-        public static void Execute()
+        public static void Execute(string query, string nameDatabase)
         {
-
+            Executequery.Execute(query, nameDatabase);
         }
 
     }

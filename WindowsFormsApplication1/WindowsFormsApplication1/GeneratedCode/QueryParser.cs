@@ -5,10 +5,33 @@ using System.Text;
 using System.IO;
 using System.Data.SQLite;
 
-namespace WindowsFormsApplication1.GeneratedCode
+namespace WindowsFormsApplication1
 {
     class QueryParser
     {
+
+        public static Dictionary<string, string> parseInput(string ceq)
+        {
+            Dictionary<string, string> input = new Dictionary<string, string>();
+            string[] seperator = new string[] { "," };
+            string[] attributes = ceq.Split(seperator, StringSplitOptions.None);
+
+            foreach (string attr in attributes)
+            {
+                string[] valueNames = attr.Split('=');
+                string column = valueNames[0];
+                column = column.Replace(" ", string.Empty);
+                valueNames[1] = valueNames[1].Replace(" ", string.Empty);
+                valueNames[1] = valueNames[1].Replace("'", string.Empty);
+                valueNames[1] = valueNames[1].Replace(";", string.Empty);
+
+                input.Add(column, valueNames[1]);
+            }
+            return input;
+        }
+
+
+
         public static Query Parse(string query)
         {
             Query toReturn;
