@@ -49,18 +49,18 @@ public class MetaDbFiller
         //get all 
         foreach (var columnProperties in TableProccessor.ColumnProperties)
         {
-           
             //first find out if there are jaquard values available for the column if numerical, using the library cointained in this class
-
-
-        //execute the createmetatable to create a qfidf table for the column 
+            if(jacquard.ContainsKey(columnProperties.Key))
+            {
+                //execute the createmetatable to create a qfidf table for the column with jaccard values 
+                CreateMetaTable(columnProperties.Key, false, true);
+            }
+            else
+            {
+                //execute the createmetatable to create a qfidf table for the numerical column 
+                CreateMetaTable(columnProperties.Key, true);
+            }   
         }
-        
-
-    
-        
-
-
     }
 
     /// <summary>
@@ -71,33 +71,119 @@ public class MetaDbFiller
     /// <param name="jaquard"></param>
     public static void CreateMetaTable(string columname, bool? numerical, bool jaquard = false)
     {
+        string create = null;
+        string jaccardColumns = null;
+
         // if jaquard find the column values for the jaquard crossing table columns 
+        if (numerical != false)
+        {
+            // create the create table statement with columns: name, idf, qf, possibly the jacquard columns
+            create = "CREATE TABLE " + columname + " (value REAL, idf REAL, qf REAL);";   
+        }
+        else
+        {
+            Dictionary<string, object[]> jacc = new Dictionary<string, object[]>();
+            foreach(var jaccardColumn in jacquard[columname] as Dictionary<string,object[]> )
+            {
+                jaccardColumns += "," + jaccardColumn.Key + " REAL ";
+            }
 
-        // create the create table statement with columns: name, idf, qf, possibly the jacquard columns
-
+            create = "CREATE TABLE " + columname + "(name varchar(30), idf REAL, qf REAL" + jaccardColumns + ");";
+        }
         //unleash it on the dbconnection
-        
+        dbConnection.runCreationSqlMeta(create);
     }
 
 
-
+    //fill insert statement of whole metaDB
     public static void FillMetaDb()
     {
-
-        //get all the columns
-
-        //execute the fillmetatable for each column
+        //get all 
+        foreach (var columnProperties in TableProccessor.ColumnProperties)
+        {
+            if (jacquard.ContainsKey(columnProperties.Key))
+            {
+                //execute the fillmetatable to insert in a qfidf table for the column with jaccard values 
+                FillMetaTable(columnProperties.Key, false, true);
+            }
+            else
+            {
+                //execute the fillmetatable to insert in a qfidf table for the numerical column 
+                FillMetaTable(columnProperties.Key, true);
+            }
+        }
     }
-
+    //fill insert statement for one table
     public static void FillMetaTable(string columname, bool? numerical, bool jaquard = false)
     {
-        //foreach idf value 
-        //check if there is a qf related to the idf, if not fill in zero
-        //check for the jaquard values
-        //put together a create statement
-        
+        string insert = null;
+        string jaccard = null;
+        string idfValue = null;
+        string qfValue = "0";
 
-       //fire the statements at the dbconnection
+        //foreach idf value 
+        if (numerical != false)
+        {
+            foreach (var idf in idfs[columname] as Dictionary<string, double>)
+            {
+                //check if there is a qf related to the idf, if not, fill in zero
+                foreach(var qfs in qf[columname] as Dictionary<string, double>)
+                {
+                    if(qfs.Key.Equals(idf.Key))
+                    {
+                        qfValue = qfs.Value.ToString();
+                    }
+                }
+
+                string name = idf.Key;
+                idfValue = idf.Value.ToString();
+
+                //check for the jaquard values
+                if (jaquard != false)
+                {
+                    foreach(var jacc in jacquard[columname] as Dictionary<string, Dictionary<string, double>>)
+                    {
+                        Dictionary<string, Dictionary<string, double>> jaccValues = new Dictionary<string, Dictionary<string, double>>();
+                        jaccard += "," + jaccValues[jacc.Key][idf.Key].ToString();
+                    }  
+                     
+                    insert = "INSERT INTO " + columname + "VALUES (" + name + "," + idfValue + "," + qfValue + jaccard + ");";
+                }
+                else
+                {
+                    //put together a insert statement for non jaccard
+                    insert = "INSERT INTO " + columname + "VALUES (" + name + "," + idfValue + "," + qfValue + ");";
+                }
+
+                //fire the statements at the dbconnection
+                dbConnection.runCreationSqlMeta(insert);
+            }
+        }
+        else
+        {
+            foreach (var idf in idfs[columname] as Dictionary<double, double>)
+            {
+                //check if there is a qf related to the idf, if not, fill in zero
+                foreach (var qfs in qf[columname] as Dictionary<double, double>)
+                {
+                    if (qfs.Key.Equals(idf.Key))
+                    {
+                        qfValue = qfs.Value.ToString();
+                    }
+                }
+
+                //put together a insert statement for numerical
+                string idValue = idf.Key.ToString();
+                idfValue = idf.Value.ToString(); 
+                insert = "INSERT INTO " + columname + "VALUES ("+ idValue + ", " + idfValue + ", " + qfValue + ");";
+
+                //fire the statements at the dbconnection
+                dbConnection.runCreationSqlMeta(insert);
+            }
+        }
+
+            //INSERT INTO brand VALUES (toyota, idf, qf, jaccard nummers);
+            //INSERT INTO acceleration VALUES (keyID, idf, qf);
     }
 
 
@@ -107,7 +193,7 @@ public class MetaDbFiller
         using (StreamWriter writer = new StreamWriter("metadb.txt"))
         {
             //foreach column in meegegeven argument, voor elke columnnaam maak je een aparte tabel
-            //met ID, IDF, QF en QFIDF en schrijf je uit naar een metadb.txt
+            //met ID, IDF, QF en schrijf je uit naar een metadb.txt
             string name = columnnames[0];
             string id = columnnames[1];
             string type = columnnames[2];
