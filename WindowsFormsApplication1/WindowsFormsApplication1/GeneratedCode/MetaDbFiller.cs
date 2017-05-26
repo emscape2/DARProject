@@ -41,6 +41,41 @@ public class MetaDbFiller
     {
         jacquard.Add(columname, jaquards);
     }
+    
+
+    public static void CreateMetaTables()
+    {
+        //get all the columns
+
+        //execute the createmetatable for each column
+
+    }
+
+    /// <summary>
+    /// creates a meta table for each column. if !Numerical then jaquard should be filled
+    /// </summary>
+    /// <param name="columname"></param>
+    /// <param name="numerical"></param>
+    /// <param name="jaquard"></param>
+    public static void CreateMetaTable(string columname, bool? numerical, bool jaquard = false)
+    {
+        
+    }
+
+
+
+    public static void FillMetaDb()
+    {
+
+        //get all the columns
+
+        //execute the fillmetatable for each column
+    }
+
+    public static void FillMetaTable(string columname, bool? numerical, bool jaquard = false)
+    {
+
+    }
 
 
     //overbodige code want sqlitestudio
