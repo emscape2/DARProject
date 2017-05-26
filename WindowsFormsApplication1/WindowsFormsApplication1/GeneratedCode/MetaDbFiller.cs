@@ -16,7 +16,8 @@ public class MetaDbFiller
     public static Dictionary<string, object> idfs = new Dictionary<string, object>();
     public static Dictionary<string, object> qf = new Dictionary<string, object>();
     public static Dictionary<string, object> jacquard = new Dictionary<string, object>();
-
+    public static DatabaseConnection dbConnection;
+    
     public static void IdfMetaTable(string columname, Dictionary<string, double> iDfs)
     {
         idfs.Add(columname, iDfs);
@@ -45,9 +46,20 @@ public class MetaDbFiller
 
     public static void CreateMetaTables()
     {
-        //get all the columns
+        //get all 
+        foreach (var columnProperties in TableProccessor.ColumnProperties)
+        {
+           
+            //first find out if there are jaquard values available for the column if numerical, using the library cointained in this class
 
-        //execute the createmetatable for each column
+
+        //execute the createmetatable to create a qfidf table for the column 
+        }
+        
+
+    
+        
+
 
     }
 
@@ -59,6 +71,11 @@ public class MetaDbFiller
     /// <param name="jaquard"></param>
     public static void CreateMetaTable(string columname, bool? numerical, bool jaquard = false)
     {
+        // if jaquard find the column values for the jaquard crossing table columns 
+
+        // create the create table statement with columns: name, idf, qf, possibly the jacquard columns
+
+        //unleash it on the dbconnection
         
     }
 
@@ -74,7 +91,13 @@ public class MetaDbFiller
 
     public static void FillMetaTable(string columname, bool? numerical, bool jaquard = false)
     {
+        //foreach idf value 
+        //check if there is a qf related to the idf, if not fill in zero
+        //check for the jaquard values
+        //put together a create statement
+        
 
+       //fire the statements at the dbconnection
     }
 
 
@@ -104,7 +127,6 @@ public class MetaDbFiller
         }
     }
 
-    public static DatabaseConnection dbConnection;
 
     public static void createMetadb(string[] createStatements)
     {
