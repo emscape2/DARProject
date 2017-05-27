@@ -54,7 +54,7 @@ namespace WindowsFormsApplication1
                 }
                 else
                 {
-                    ranking += elem.Value.Item2 * elem.Value.Item3 * getSim(elem.Value.Item1, row[elem.Key], elem.Key);
+                    ranking += elem.Value.Item2 * elem.Value.Item3 * getSim(Convert.ToDouble(elem.Value.Item1), Convert.ToDouble(row[elem.Key]), elem.Key);
                 }
             }
 
@@ -74,18 +74,46 @@ namespace WindowsFormsApplication1
             return column[value2];
         }
 
-        public static double getSim(object value, object value2, string columname)
+        public static double getSim(double value, double value2, string columname)
         {
+            ColumnProperties properties = TableProccessor.ColumnProperties[columname];
+            double h = properties.max - properties.min;
+            double dist = value2 - value;
+
+
             //todo numerical equivalent of jaccard
-            return 0;
+            return 1.0 - (dist / h);
         }
 
         public static double getQF(string value, string columname)
         {
-            if (!TableProccessor.ColumnProperties[columname].numerical.HasValue || TableProccessor.ColumnProperties[columname].numerical.Value)
+            ColumnProperties properties = TableProccessor.ColumnProperties[columname];
+            if (properties.numerical.HasValue || properties.numerical.Value)
             {
-                //todo numerical qf retrieval
-                return 0;
+                if (properties.numerical.HasValue)
+                {
+                    double u = Convert.ToDouble(value);
+                    double start = 0 , end;
+                    if (properties.min > u)
+                    {
+                        return 0;//TODO recalculate
+                    }
+                    double interval = properties.GetInterval();
+                    for (double d = properties.min; d < u; d += interval)
+                    {
+                        start = d;
+                    }
+                    end = start + interval;
+
+                    double qf1, qf2;
+                    qf1 = (MetaDbFiller.qf[columname] as Dictionary<double, double>)[start];//rekening met end
+                    qf2 = (MetaDbFiller.qf[columname] as Dictionary<double, double>)[end];
+                    double div = (u - start) / interval;
+                    qf1 *= div;
+                    qf2 *= 1.0 - div;
+                    return qf2 + qf1;
+                }
+                    return 0;
             }
             Dictionary<string, double> qfs = MetaDbFiller.qf[columname] as Dictionary<string, double>;
             if (!qfs.ContainsKey(value))
@@ -97,9 +125,32 @@ namespace WindowsFormsApplication1
         public static double getIDF(string value, string columname)
         {
             //todo take into account non existing values
-            if (!TableProccessor.ColumnProperties[columname].numerical.HasValue || TableProccessor.ColumnProperties[columname].numerical.Value)
+            ColumnProperties properties = TableProccessor.ColumnProperties[columname];
+            if (properties.numerical.HasValue || properties.numerical.Value)
             {
-                //todo numerical idf retrieval
+                if (properties.numerical.HasValue)
+                {
+                    double u = Convert.ToDouble(value);
+                    double start = 0, end;
+                    if (properties.min > u)
+                    {
+                        return 0;//TODO recalculate
+                    }
+                    double interval = properties.GetInterval();//TODO do only once 
+                    for (double d = properties.min; d < u; d += interval)
+                    {
+                        start = d;
+                    }
+                    end = start + interval;
+
+                    double idf1, idf2;
+                    idf1 = (MetaDbFiller.idfs[columname] as Dictionary<double, double>)[start];
+                    idf2 = (MetaDbFiller.idfs[columname] as Dictionary<double, double>)[end];
+                    double div = (u - start) / interval;
+                    idf1 *= div;
+                    idf2 *= 1.0 - div;
+                    return idf2 + idf1;
+                }
                 return 0;
             }
             Dictionary<string, double> idfs = MetaDbFiller.idfs[columname] as Dictionary<string, double>;
