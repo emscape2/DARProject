@@ -61,7 +61,7 @@ public class WorkloadParser
             string[] and = everything.Split(separator, StringSplitOptions.None);
             //switch op "IN" en "="
 
-            List<string> ins = new List<string>();
+            List<string> ins = new List<string>();//process in and is statements differnetly
             List<string> isses = new List<string>();
             foreach (string str in and)
             {
@@ -141,12 +141,13 @@ public class WorkloadParser
         catch (FormatException e)
         {
             //donothing
+            //TODO Message box?
         }
         finally
-            {
+        {
         }
         return null;
-        }
+    }
 
 
 }
