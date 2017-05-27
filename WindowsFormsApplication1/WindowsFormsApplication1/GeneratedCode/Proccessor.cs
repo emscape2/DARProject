@@ -109,7 +109,7 @@ namespace WindowsFormsApplication1
 
 
             //todo numerical equivalent of jaccard
-            return 1.0 - (dist / h);
+            return 1.0 -Math.Abs(dist / h);
         }
 
         public static double getQF(string value, string columname)
