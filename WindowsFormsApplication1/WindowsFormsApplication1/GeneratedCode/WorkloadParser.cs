@@ -96,7 +96,7 @@ public class WorkloadParser
                 ColumnProperties properties = TableProccessor.ColumnProperties[column];
 
 
-                if (properties.numerical != null && properties.numerical.Value)
+                if (properties.numerical == null || properties.numerical.Value)
                 {
                     for (int i = 0; i < desiredValues.Length; i++)
                     {
@@ -125,7 +125,7 @@ public class WorkloadParser
                 //retrieve the properties of column and determine datatype
                 ColumnProperties properties = TableProccessor.ColumnProperties[column];
 
-                if (properties.numerical != null && properties.numerical.Value)
+                if (properties.numerical == null || properties.numerical.Value)
                 {
                     desiredValues[0] = Convert.ToDecimal(desiredValues[0]);
                 }

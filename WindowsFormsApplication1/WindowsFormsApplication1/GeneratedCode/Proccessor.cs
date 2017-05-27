@@ -147,7 +147,7 @@ namespace WindowsFormsApplication1
             ColumnProperties properties = TableProccessor.ColumnProperties[columname];
             if (!properties.numerical.HasValue || properties.numerical.Value)
             {
-                if (properties.numerical.HasValue)
+               // if (properties.numerical.HasValue)
                 {
                     double u = Convert.ToDouble(value.Replace('.', ','));
                     double start = 0 , end;
@@ -170,7 +170,7 @@ namespace WindowsFormsApplication1
                     qf2 *= 1.0 - div;
                     return qf2 + qf1;
                 }
-                    return 0;//TODO special integer cases afhandelen
+
             }
             Dictionary<string, double> qfs = MetaDbFiller.qf[columname] as Dictionary<string, double>;
             if (!qfs.ContainsKey(value))
@@ -190,7 +190,7 @@ namespace WindowsFormsApplication1
             ColumnProperties properties = TableProccessor.ColumnProperties[columname];
             if (!properties.numerical.HasValue || properties.numerical.Value)
             {
-                if (properties.numerical.HasValue)
+                //if (properties.numerical.HasValue)
                 {
                     double u = Convert.ToDouble(value.Replace('.',',' ));
                     double start = 0, end;
@@ -213,7 +213,7 @@ namespace WindowsFormsApplication1
                     idf2 *= 1.0 - div;
                     return idf2 + idf1;
                 }
-                return 0;
+                //return 0;
             }
             Dictionary<string, double> idfs = MetaDbFiller.idfs[columname] as Dictionary<string, double>;
             if (!idfs.ContainsKey(value))

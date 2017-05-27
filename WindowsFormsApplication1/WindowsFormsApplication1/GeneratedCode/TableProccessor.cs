@@ -62,7 +62,7 @@ public class TableProccessor
 
             column.Value.distinctValues = GetDistinct(column.Key);
 
-            if (!column.Value.numerical.Value)
+            if (column.Value.numerical.HasValue && !column.Value.numerical.Value)
             {
                 int max = 0; // we decided to devide by the maximum number of occurrences instead of amount of documents
                              // because the intention of using IDF is to have the most common terms being log(1) (frequent terms occur in basically any document)
@@ -150,10 +150,25 @@ public class TableProccessor
     /// <returns></returns>
     public static double GetIntervalSize(string columname)
     {
-
+        // 
         int distinct = ColumnProperties[columname].distinctValues;
         int intervals = (int)(10.0d * Math.Log(ColumnProperties[columname].distinctValues));//10 * log(distinct) intervals zorgen dat je niet 0 krijgt
         double size = (ColumnProperties[columname].max - ColumnProperties[columname].min) / ((double)(intervals));
+        if (!ColumnProperties[columname].numerical.HasValue)
+        {
+            if(size < 1)//size onder 1 heeft geen zin bij andere sizes rounden
+            {
+                intervals = (int)(ColumnProperties[columname].max - ColumnProperties[columname].min);
+                size = 1;
+            }
+            else//anders geheel getal nemen
+            {
+                size = Math.Round(size);
+                intervals = (int)Math.Ceiling((ColumnProperties[columname].max - ColumnProperties[columname].min) / size);
+            }
+
+
+        }
         ColumnProperties[columname].SetInterval(size);
         return size;
     }
@@ -268,7 +283,7 @@ public class TableProccessor
             {
                 if (row[tableInfo.Columns[2]].ToString().ToLower().Contains("integer"))
                 {
-                    numerical = true;//TODO moet voor integers tot n bepaald distinct limiet null zijn
+                    numerical = null;//TODO moet voor integers tot n bepaald distinct limiet null zijn
                     DataTable min = connection.QueryForDataTable("SELECT  " + columnNames[i] + " FROM autompg ORDER BY " + columnNames[i] + " ASC LIMIT 1;");
                     // select smallest value
                     var small = min.Rows[0][0];

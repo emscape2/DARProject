@@ -50,7 +50,7 @@ namespace WindowsFormsApplication1
             //split op "AND"
             separator = new string[] { "AND" };
             string[] and = everything.Split(separator, StringSplitOptions.None);
-            
+
             //switch op "IN" en "="
             List<string> ins = new List<string>();
             List<string> isses = new List<string>();
@@ -83,7 +83,7 @@ namespace WindowsFormsApplication1
 
                 ColumnProperties properties = TableProccessor.ColumnProperties[column];
 
-                if (properties.numerical != null && properties.numerical.Value)
+                if (properties.numerical == null || properties.numerical.Value)
                 {
                     for (int i = 0; i < desiredValues.Length; i++)
                     {
