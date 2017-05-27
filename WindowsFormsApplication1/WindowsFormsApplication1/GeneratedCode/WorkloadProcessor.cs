@@ -14,7 +14,7 @@ public class WorkloadProcessor
 
 
     /// <summary>
-    /// here the QF similarities should be calculated
+    /// here the QF Values and where appliccable the Jaccard coefficients should be calculated
     /// </summary>
     /// <param name="Workload"></param>
     public static void Process(SQLQuery[] Workload)
@@ -37,10 +37,15 @@ public class WorkloadProcessor
 
     }
 
+    /// <summary>
+    /// gets all the jaccard coefficients
+    /// </summary>
+    /// <param name="Workload"></param>
+    /// <param name="columname"></param>
     public static void GetJaquards(SQLQuery[] Workload, string columname)
     {
         bool useful = false;
-        foreach (var query in Workload)
+        foreach (var query in Workload)//first check if there is any need at all to calculate 
         {
             if (!useful && query.requiredValues.ContainsKey(columname) && query.requiredValues[columname].Length > 1)
             {
@@ -55,7 +60,7 @@ public class WorkloadProcessor
         }
         
         List<SQLQuery> relevantQueries = new List<SQLQuery>();
-        foreach (var query in Workload)
+        foreach (var query in Workload)//only select queries with any relevant info
         {
             if (query.requiredValues.ContainsKey(columname))
             {
@@ -79,7 +84,14 @@ public class WorkloadProcessor
     }
 
     
-
+    /// <summary>
+    /// calculate the jaquard coefficient for two terms
+    /// </summary>
+    /// <param name="relevant"></param>
+    /// <param name="term1"></param>
+    /// <param name="term2"></param>
+    /// <param name="columname"></param>
+    /// <returns></returns>
     public static double Jaquard(List<SQLQuery> relevant, string term1, string term2, string columname)
     {
         int union = 0, intersection = 0;
@@ -109,11 +121,15 @@ public class WorkloadProcessor
         return (double)intersection / (double)union ;
     }
 
-
+    /// <summary>
+    /// Get All Qfs for non numerical values
+    /// </summary>
+    /// <param name="Workload"></param>
+    /// <param name="columname"></param>
     public static void GetNonNumericalQfs(SQLQuery[] Workload, string columname)
     {
-        Dictionary<object, int> pairing = new Dictionary<object, int>();
-        List<int> timeDictionary = new List<int>();
+        Dictionary<object, int> pairing = new Dictionary<object, int>();//coupling between the location in the timeDictionary and a string
+        List<int> timeDictionary = new List<int>();//raw amount of occurrences
         int counter = 0;
 
         foreach (SQLQuery query in Workload)
@@ -124,7 +140,7 @@ public class WorkloadProcessor
                 int times = query.times;
                 foreach (var value in values)
                 {
-                    if (!pairing.ContainsKey(value))
+                    if (!pairing.ContainsKey(value))//saves pairing between location in timedictionary and string index
                     {
                         pairing.Add(value, counter);
                         timeDictionary.Add(times);
@@ -144,7 +160,7 @@ public class WorkloadProcessor
         {
             foreach (var entry in (MetaDbFiller.idfs[columname] as Dictionary<string, double>))
             {
-                qfs.Add(entry.Key, 1.0);
+                qfs.Add(entry.Key, 1.0);//add qf value of 1 if never searched for yet
             }
         }
         else
@@ -153,14 +169,18 @@ public class WorkloadProcessor
             foreach (var pair in pairing)
             {
                 double qf = timeDictionary[pair.Value] / rqfmax;
-                qfs.Add(pair.Key.ToString(), qf);
+                qfs.Add(pair.Key.ToString(), qf);//add scalar qf if not
             }
         }
         MetaDbFiller.AddQfMetaTable(columname, qfs);
 
     }
 
-
+    /// <summary>
+    /// get all numerical qfs
+    /// </summary>
+    /// <param name="Workload"></param>
+    /// <param name="columname"></param>
     public static void GetNumericalQf(SQLQuery[] Workload, string columname)
     {
         double size = TableProccessor.GetIntervalSize(columname);
@@ -169,7 +189,7 @@ public class WorkloadProcessor
         int total = 0;
         foreach(var query in Workload)
         {
-            if (query.requiredValues.ContainsKey(columname))
+            if (query.requiredValues.ContainsKey(columname))//only relevant queries are being used
             {
                 relevantQueries.Add(query);
                 total += query.times;
@@ -191,12 +211,19 @@ public class WorkloadProcessor
 
         MetaDbFiller.AddQfMetaTable(columname, Qfs);
 
-        relevantQueries = null;
+        relevantQueries = null;//memory cleanup
         GC.Collect();
     }
 
 
-
+    /// <summary>
+    /// retrieve a specific value. U is the value, n total ammount of queries
+    /// </summary>
+    /// <param name="u"></param>
+    /// <param name="Workload"></param>
+    /// <param name="columname"></param>
+    /// <param name="n"></param>
+    /// <returns></returns>
     public static double getNumericalQFFromU(double u, List<SQLQuery> Workload, string columname, int n)
     {
         double qf = 0;
@@ -206,12 +233,13 @@ public class WorkloadProcessor
             ColumnProperties properties = TableProccessor.ColumnProperties[columname];
             object[] values = query.requiredValues[columname];
 
-
+            // similar to the calculation of Idf the queried values represent guidance locations 
             foreach (var value in values)
             {
                 double ti;
-                ti = Convert.ToDouble(value) * query.times;
-                qf += 0.5 * (Math.Pow(((ti - u) / (properties.max - properties.min / 2)), 2)) / n;
+                ti = Convert.ToDouble(value);//using which we will approximate the results of a function
+                double temp = 0.5 * (Math.Pow(((ti - u) / (properties.max - properties.min / 2)), 2)) / n;
+                qf += temp * query.times;
             }
         }
         return qf;

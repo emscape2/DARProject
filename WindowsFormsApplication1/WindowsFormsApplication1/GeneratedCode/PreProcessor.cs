@@ -13,6 +13,10 @@ using System.Data.SQLite;
 
 public class PreProcessor
 {
+    /// <summary>
+    /// used for processing the create statements of the database
+    /// </summary>
+    /// <param name="reader"></param>
     public static void ProcessTables(StreamReader reader)
     {
 
@@ -20,6 +24,9 @@ public class PreProcessor
         TableProccessor.CreateAndFillTable(rawSql);
     }
     
+    /// <summary>
+    /// Loads tables and calculates IDF values and other essentials
+    /// </summary>
     public static void LoadTableAndPreprocess()
     {
         TableProccessor.RetrieveTable();
@@ -27,6 +34,10 @@ public class PreProcessor
         TableProccessor.Process();
     }
 
+    /// <summary>
+    /// Processes the workload supplied by the .txt file
+    /// </summary>
+    /// <param name="Workload"></param>
 	public static void ProccessWorkload(StreamReader Workload)
 	{
         string temp = Workload.ReadToEnd();

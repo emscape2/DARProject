@@ -9,7 +9,11 @@ namespace WindowsFormsApplication1
 {
     class QueryParser
     {
-
+        /// <summary>
+        /// parses a CEQ query 
+        /// </summary>
+        /// <param name="ceq"></param>
+        /// <returns></returns>
         public static Dictionary<string, string> parseInput(string ceq)
         {
             Dictionary<string, string> input = new Dictionary<string, string>();
@@ -24,6 +28,8 @@ namespace WindowsFormsApplication1
                 valueNames[1] = valueNames[1].Replace(" ", string.Empty);
                 valueNames[1] = valueNames[1].Replace("'", string.Empty);
                 valueNames[1] = valueNames[1].Replace(";", string.Empty);
+                valueNames[1] = valueNames[1].Replace(".", ".");
+
 
                 input.Add(column, valueNames[1]);
             }

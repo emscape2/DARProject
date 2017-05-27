@@ -38,7 +38,7 @@ public class DatabaseConnection
     public void runCreationSql(string rawSql)
     {
         //TODO testen of alle statements ingevuld worden
-        using (SQLiteConnection objConnection = TableProccessor.connection.m_dbConnection)
+        using (SQLiteConnection objConnection = m_dbConnection)
         {
             using (SQLiteCommand objCommand = objConnection.CreateCommand())
             {
