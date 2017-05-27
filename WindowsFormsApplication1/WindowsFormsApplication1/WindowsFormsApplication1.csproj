@@ -67,7 +67,6 @@
     <Compile Include="GeneratedCode\PreProcessor.cs" />
     <Compile Include="GeneratedCode\Proccessor.cs" />
     <Compile Include="GeneratedCode\QueryParser.cs" />
-    <Compile Include="GeneratedCode\RankCalculator.cs" />
     <Compile Include="GeneratedCode\SQLQuery.cs" />
     <Compile Include="GeneratedCode\TableProccessor.cs" />
     <Compile Include="GeneratedCode\WorkloadParser.cs" />
