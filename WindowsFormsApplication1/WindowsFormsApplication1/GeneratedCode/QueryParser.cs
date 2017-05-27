@@ -28,7 +28,7 @@ namespace WindowsFormsApplication1
                 valueNames[1] = valueNames[1].Replace(" ", string.Empty);
                 valueNames[1] = valueNames[1].Replace("'", string.Empty);
                 valueNames[1] = valueNames[1].Replace(";", string.Empty);
-                valueNames[1] = valueNames[1].Replace(".", ".");
+                valueNames[1] = valueNames[1].Replace(".", ",");
 
 
                 input.Add(column, valueNames[1]);
