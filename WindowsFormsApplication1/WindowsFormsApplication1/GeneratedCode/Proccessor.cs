@@ -63,7 +63,7 @@ namespace WindowsFormsApplication1
             foreach (DataRow row in toReturn)
             {
                 resultTable.ImportRow(row);
-                Thread.Sleep(16);// for animation
+                Thread.Sleep(10);// for animation
             }
             form.BindData(resultTable);
         }
@@ -130,10 +130,10 @@ namespace WindowsFormsApplication1
         {
             ColumnProperties properties = TableProccessor.ColumnProperties[columname];
             double h = properties.max - properties.min;
-            double dist = value2 - value;
+            double dist = Math.Abs(value2 - value);
 
             //TODO take the distribution into account
-            return 1.0 -Math.Abs(dist / h);
+            return 1.0 -(dist / h);
         }
 
         /// <summary>
