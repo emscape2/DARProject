@@ -169,6 +169,13 @@ public class WorkloadProcessor
             foreach (var pair in pairing)
             {
                 double qf = timeDictionary[pair.Value] / rqfmax;
+
+
+                if (double.IsNaN(qf))
+                {
+                    throw new Exception("value is NaN in column: " + columname);
+                }
+
                 qfs.Add(pair.Key.ToString(), qf);//add scalar qf if not
             }
         }
@@ -202,13 +209,33 @@ public class WorkloadProcessor
         {
             double qf = getNumericalQFFromU(d, relevantQueries, columname, total);
             RQfs.Add(d,qf);
-            if (RQfMax < qf)
+            if (Math.Abs(RQfMax) < qf)//also take possible negative values into account
                 RQfMax = qf;
         }
 
         foreach (var Qf in RQfs)
-            Qfs.Add(Qf.Key, Qf.Value / RQfMax);
+        {
 
+            double d;
+            if (RQfMax == 0)//never queried
+            {
+                d = 1;
+            }
+            else
+            {
+                d = Qf.Value / RQfMax;
+            }
+
+            if (double.IsNaN(d))
+            {
+
+                throw new Exception("value is NaN in column: " + columname);
+            }
+
+            Qfs.Add(Qf.Key, d);
+
+
+        }
         MetaDbFiller.AddQfMetaTable(columname, Qfs);
 
         relevantQueries = null;//memory cleanup
@@ -241,6 +268,10 @@ public class WorkloadProcessor
                 double temp = 0.5 * (Math.Pow(((ti - u) / (properties.max - properties.min / 2)), 2)) / n;
                 qf += temp * query.times;
             }
+        }
+        if (double.IsNaN(qf))
+        {
+            throw new Exception("value is NaN in column: " + columname);
         }
         return qf;
 
