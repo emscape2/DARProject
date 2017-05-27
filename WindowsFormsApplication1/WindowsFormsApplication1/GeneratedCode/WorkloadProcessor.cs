@@ -22,12 +22,12 @@ public class WorkloadProcessor
 
         foreach (var column in TableProccessor.ColumnProperties)
         {
-            if (column.Value.numerical != null && !column.Value.numerical.Value)
+            if ( column.Key != "id" && (column.Value.numerical != null && !column.Value.numerical.Value))
             {
                 GetNonNumericalQfs(Workload, column.Key);
                 GetJaquards(Workload, column.Key);
             }
-            else if (column.Value.numerical != null && column.Key != "id")
+            else if (column.Key != "id")
             {
                 GetNumericalQf(Workload, column.Key);
             }
