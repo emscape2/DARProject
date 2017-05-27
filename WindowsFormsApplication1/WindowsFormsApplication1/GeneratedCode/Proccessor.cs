@@ -5,13 +5,16 @@ using System.Data;
 using System.Linq;
 
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace WindowsFormsApplication1
 {
     public class Proccessor
     {
-
+        /// <summary>
+        /// recieves the CEQ query and Processes it and its results
+        /// </summary>
+        /// <param name="ceq"></param>
         public static void LoadAndProccessCeq(String ceq)
         {
             Dictionary<string, string> parsedCeq = QueryParser.parseInput(ceq);
@@ -19,6 +22,8 @@ namespace WindowsFormsApplication1
             Dictionary<DataRow, double> ratings = new Dictionary< DataRow, double>( );
             Dictionary<string, Tuple<object, double, double>> elements = new Dictionary<string, Tuple<object, double, double>>();
 
+            
+            //retrieve k
             int k = 10;
             if (parsedCeq.ContainsKey("k"))
             {
@@ -26,6 +31,7 @@ namespace WindowsFormsApplication1
                 parsedCeq.Remove("k");
             }
 
+            //prepare each element in the parsed CEQ for rating calculation
             foreach (var elem in parsedCeq)
             {
                 double idf = getIDF(elem.Value, elem.Key);
@@ -36,22 +42,20 @@ namespace WindowsFormsApplication1
             }
             foreach (DataRow row in table.Rows)
             {
-                ratings.Add( row, GetSimilarity(elements, row));
+                ratings.Add( row, GetSimilarity(elements, row));//add rating
             }
 
 
-            var results = ratings.ToList();
-
-            results.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
-
-
+            var results = ratings.ToList();//convert to sorted list
+            results.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));//TODO More efficient top k, idf and qf values can be used as well as distance for numerical and plausibly even jaccard
 
             List<DataRow> toReturn = new List<DataRow>();
             for (int i = 0; i < k; i++)
             {
-                toReturn.Add(results[i].Key);
+                toReturn.Add(results[i].Key);//add top 10 rows
             }
 
+            //create form
             Results form = new Results();
             form.Show();
             DataTable resultTable = table.Clone();
@@ -59,28 +63,34 @@ namespace WindowsFormsApplication1
             foreach (DataRow row in toReturn)
             {
                 resultTable.ImportRow(row);
+                Thread.Sleep(16);// for animation
             }
             form.BindData(resultTable);
         }
 
 
-
+        /// <summary>
+        /// gets the similarity between the row and the query
+        /// </summary>
+        /// <param name="elements"></param>
+        /// <param name="row"></param>
+        /// <returns></returns>
         public static double GetSimilarity(Dictionary<string, Tuple<object,double,double>> elements, DataRow row)
         {
             double ranking = 0;
 
             foreach (var elem in elements)
             {
-                if (elem.Value.Item1 as string == row[elem.Key] as string)
+                if (elem.Value.Item1 as string == row[elem.Key] as string) //if values are the same
                 {
                     ranking += elem.Value.Item2 * elem.Value.Item3;
                 }
                 else if (TableProccessor.ColumnProperties[elem.Key].numerical.HasValue && TableProccessor.ColumnProperties[elem.Key].numerical.Value == false)
-                {
+                {//when non numerical use the jaccard if available, if not just 0
                     ranking += elem.Value.Item2 * elem.Value.Item3 * getJaqcuard(elem.Value.Item1 as string, row[elem.Key] as string, elem.Key );
                 }
                 else
-                {
+                {//else get similarity 
                     ranking += elem.Value.Item2 * elem.Value.Item3 * getSim(Convert.ToDouble(elem.Value.Item1), Convert.ToDouble(row[elem.Key]), elem.Key);
                 }
             }
@@ -88,6 +98,14 @@ namespace WindowsFormsApplication1
             return ranking;
         }
 
+
+        /// <summary>
+        /// gets the jaccard value of two strings
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="value2"></param>
+        /// <param name="columname"></param>
+        /// <returns></returns>
         public static double getJaqcuard(string value, string value2, string columname)
         {
             if (!MetaDbFiller.jacquard.ContainsKey(columname))
@@ -101,17 +119,29 @@ namespace WindowsFormsApplication1
             return column[value2];
         }
 
+        /// <summary>
+        /// Gets numerical similarity by determing the weight of the distance between two values
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="value2"></param>
+        /// <param name="columname"></param>
+        /// <returns></returns>
         public static double getSim(double value, double value2, string columname)
         {
             ColumnProperties properties = TableProccessor.ColumnProperties[columname];
             double h = properties.max - properties.min;
             double dist = value2 - value;
 
-
-            //todo numerical equivalent of jaccard
+            //TODO take the distribution into account
             return 1.0 -Math.Abs(dist / h);
         }
 
+        /// <summary>
+        /// Gets the QF for a value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="columname"></param>
+        /// <returns></returns>
         public static double getQF(string value, string columname)
         {
             ColumnProperties properties = TableProccessor.ColumnProperties[columname];
@@ -121,9 +151,9 @@ namespace WindowsFormsApplication1
                 {
                     double u = Convert.ToDouble(value.Replace('.', ','));
                     double start = 0 , end;
-                    if (properties.min > u)
+                    if (properties.min > u || properties.max < u)
                     {
-                        return 0;//TODO recalculate
+                        return 0;//TODO recalculate when outside of saved values
                     }
                     double interval = properties.GetInterval();
                     for (double d = properties.min; d < u; d += interval)
@@ -133,22 +163,27 @@ namespace WindowsFormsApplication1
                     end = start + interval;
 
                     double qf1, qf2;
-                    qf1 = (MetaDbFiller.qf[columname] as Dictionary<double, double>)[start];//rekening met end
+                    qf1 = (MetaDbFiller.qf[columname] as Dictionary<double, double>)[start];
                     qf2 = (MetaDbFiller.qf[columname] as Dictionary<double, double>)[end];
-                    double div = (u - start) / interval;
-                    qf1 *= div;
+                    double div = (u - start) / interval;// interpolate between the two closest values
+                    qf1 *= div; 
                     qf2 *= 1.0 - div;
                     return qf2 + qf1;
                 }
-                    return 0;
+                    return 0;//TODO special integer cases afhandelen
             }
             Dictionary<string, double> qfs = MetaDbFiller.qf[columname] as Dictionary<string, double>;
             if (!qfs.ContainsKey(value))
-                return 0;
+                return 0; // When query frequency is nill
             return qfs[value];
         }
 
-
+        /// <summary>
+        /// gets the IDF for certain value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="columname"></param>
+        /// <returns></returns>
         public static double getIDF(string value, string columname)
         {
             //todo take into account non existing values
@@ -163,7 +198,7 @@ namespace WindowsFormsApplication1
                     {
                         return 0;//TODO recalculate
                     }
-                    double interval = properties.GetInterval();//TODO do only once 
+                    double interval = properties.GetInterval();
                     for (double d = properties.min; d < u; d += interval)
                     {
                         start = d;
@@ -174,7 +209,7 @@ namespace WindowsFormsApplication1
                     idf1 = (MetaDbFiller.idfs[columname] as Dictionary<double, double>)[start];
                     idf2 = (MetaDbFiller.idfs[columname] as Dictionary<double, double>)[end];
                     double div = (u - start) / interval;
-                    idf1 *= div;
+                    idf1 *= div;//interpolate
                     idf2 *= 1.0 - div;
                     return idf2 + idf1;
                 }
@@ -182,7 +217,7 @@ namespace WindowsFormsApplication1
             }
             Dictionary<string, double> idfs = MetaDbFiller.idfs[columname] as Dictionary<string, double>;
             if (!idfs.ContainsKey(value))
-                return 0;
+                return 0;//should not occur though
             return idfs[value];
         }
 

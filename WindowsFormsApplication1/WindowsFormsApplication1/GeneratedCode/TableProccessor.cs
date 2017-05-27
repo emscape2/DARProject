@@ -96,7 +96,7 @@ public class TableProccessor
 
 	}
 
-    //gets a dictionary from value to amount of occurrences and max occurrences
+    ///gets a dictionary from value to amount of occurrences and max occurrences
     public static Dictionary<string, int> GetDfsForText(string columname, ref int max)
     {
         Dictionary<string, int> DFs = new Dictionary<string, int>();
@@ -143,6 +143,11 @@ public class TableProccessor
         return ColumnProperties[columname].GetInterval();
     }
 
+    /// <summary>
+    /// gets the interval sizes of the given columname
+    /// </summary>
+    /// <param name="columname"></param>
+    /// <returns></returns>
     public static double GetIntervalSize(string columname)
     {
 
@@ -153,6 +158,11 @@ public class TableProccessor
         return size;
     }
 
+    /// <summary>
+    /// gets all the idfs for numerical values
+    /// </summary>
+    /// <param name="columname"></param>
+    /// <returns></returns>
     public static Dictionary<double, double> getIdfsForNumerical(string columname)
     {
         Dictionary<double, double> idfs = new Dictionary<double, double>();
@@ -166,6 +176,12 @@ public class TableProccessor
         return idfs;
     }
 
+    /// <summary>
+    /// gets an idf value for numeral input
+    /// </summary>
+    /// <param name="columname"></param>
+    /// <param name="u"></param>
+    /// <returns></returns>
     public static double GetNumeralIdf(string columname, double u)
     {
         DataTable column = connection.QueryForDataTable("SELECT " + columname + " FROM autompg  ORDER BY " + columname + " ASC;" );
