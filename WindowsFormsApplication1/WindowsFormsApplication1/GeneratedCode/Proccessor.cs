@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Data;
 using System.Linq;
+
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,9 +16,16 @@ namespace WindowsFormsApplication1
         {
             Dictionary<string, string> parsedCeq = QueryParser.parseInput(ceq);
             DataTable table = TableProccessor.RetrieveTable();
-            Dictionary<DataRow, double> ratings = new Dictionary<DataRow, double>();
+            Dictionary<DataRow, double> ratings = new Dictionary< DataRow, double>( );
             Dictionary<string, Tuple<object, double, double>> elements = new Dictionary<string, Tuple<object, double, double>>();
-            
+
+            int k = 10;
+            if (parsedCeq.ContainsKey("k"))
+            {
+                k = Convert.ToInt32(parsedCeq["k"]);
+                parsedCeq.Remove("k");
+            }
+
             foreach (var elem in parsedCeq)
             {
                 double idf = getIDF(elem.Value, elem.Key);
@@ -25,15 +34,33 @@ namespace WindowsFormsApplication1
                 //needs parsing of int64 and double i believe
                 elements.Add(elem.Key, element);
             }
-
-
-            foreach(DataRow row in table.Rows)
+            foreach (DataRow row in table.Rows)
             {
-                ratings.Add(row, GetSimilarity(elements, row));
+                ratings.Add( row, GetSimilarity(elements, row));
             }
 
-            int i = 0;
+
+            var results = ratings.ToList();
+
+            results.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
+
+
+
+            List<DataRow> toReturn = new List<DataRow>();
+            for (int i = 0; i < k; i++)
+            {
+                toReturn.Add(results[i].Key);
+            }
+
+            Results form = new Results();
+            form.Show();
+            DataTable resultTable = table.Clone();
             
+            foreach (DataRow row in toReturn)
+            {
+                resultTable.ImportRow(row);
+            }
+            form.BindData(resultTable);
         }
 
 
@@ -82,17 +109,17 @@ namespace WindowsFormsApplication1
 
 
             //todo numerical equivalent of jaccard
-            return 1.0 - (dist / h);
+            return 1.0 -Math.Abs(dist / h);
         }
 
         public static double getQF(string value, string columname)
         {
             ColumnProperties properties = TableProccessor.ColumnProperties[columname];
-            if (properties.numerical.HasValue || properties.numerical.Value)
+            if (!properties.numerical.HasValue || properties.numerical.Value)
             {
                 if (properties.numerical.HasValue)
                 {
-                    double u = Convert.ToDouble(value);
+                    double u = Convert.ToDouble(value.Replace('.', ','));
                     double start = 0 , end;
                     if (properties.min > u)
                     {
@@ -126,11 +153,11 @@ namespace WindowsFormsApplication1
         {
             //todo take into account non existing values
             ColumnProperties properties = TableProccessor.ColumnProperties[columname];
-            if (properties.numerical.HasValue || properties.numerical.Value)
+            if (!properties.numerical.HasValue || properties.numerical.Value)
             {
                 if (properties.numerical.HasValue)
                 {
-                    double u = Convert.ToDouble(value);
+                    double u = Convert.ToDouble(value.Replace('.',',' ));
                     double start = 0, end;
                     if (properties.min > u)
                     {
