@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Data.SQLite;
+
 public class PreProcessor
 {
     public static void ProcessTables(StreamReader reader)
@@ -21,7 +22,6 @@ public class PreProcessor
     
     public static void LoadTableAndPreprocess()
     {
-
         TableProccessor.RetrieveTable();
         TableProccessor.CalculateColumnProperties();
         TableProccessor.Process();
@@ -32,6 +32,7 @@ public class PreProcessor
         string temp = Workload.ReadToEnd();
         SQLQuery[] queries = WorkloadParser.Parse(temp);
         WorkloadProcessor.Process(queries);
+        
 	}
 
 }

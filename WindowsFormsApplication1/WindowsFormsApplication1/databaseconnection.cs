@@ -9,10 +9,8 @@ public class DatabaseConnection
 
     public DatabaseConnection(string location)
     {
-        m_dbConnection =
-new SQLiteConnection("Data Source=" + location + ";Version=3;");
+        m_dbConnection = new SQLiteConnection("Data Source=" + location + ";Version=3;");
         m_dbConnection.Open();
-
 
     }
 
@@ -20,7 +18,6 @@ new SQLiteConnection("Data Source=" + location + ";Version=3;");
     {
         SQLiteConnection.CreateFile(location);
         return new DatabaseConnection(location);
-
     }
 
     public int getKey(string table, string id)
@@ -32,6 +29,7 @@ new SQLiteConnection("Data Source=" + location + ";Version=3;");
         }
         return Convert.ToInt32(temp[0]) + 1;
     }
+
     public int getKey(string table)
     {
         return getKey(table, "id");
@@ -50,6 +48,11 @@ new SQLiteConnection("Data Source=" + location + ";Version=3;");
                 objConnection.Close();
             }
         }
+    }
+
+    public void runCreationSqlMeta(string rawSql)
+    {
+        runCreationSql(rawSql);
     }
 
     /// <summary>
@@ -94,7 +97,6 @@ new SQLiteConnection("Data Source=" + location + ";Version=3;");
             int current = 0;
             while (reader.Read())
             {
-
 
                 if (reader.HasRows)
                 {

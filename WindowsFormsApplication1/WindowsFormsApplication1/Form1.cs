@@ -153,5 +153,56 @@ namespace WindowsFormsApplication1
         {
             PreProcessor.LoadTableAndPreprocess();
         }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            string ceq = textBox4.Text;
+            Proccessor.LoadAndProccessCeq(ceq);
+            MessageBox.Show(ceq);
+        }
+
+        private void connect_To_SqlMeta(string dir)
+        {
+            MetaDbFiller.dbConnection = new DatabaseConnection(dir);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (textBox5.Text == "")
+            {
+
+                OpenFileDialog openFileDialog1 = new OpenFileDialog();
+                openFileDialog1.InitialDirectory = "c:\\";
+                openFileDialog1.Filter = "db files (*.db)|*.db|All files (*.*)|*.*";
+                openFileDialog1.FilterIndex = 2;
+                openFileDialog1.RestoreDirectory = true;
+                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    connect_To_SqlMeta(openFileDialog1.FileName);
+                }
+
+            }
+            else if (File.Exists(textBox5.Text))
+            {
+                connect_To_SqlMeta(textBox5.Text);
+            }
+            else
+            {
+                MetaDbFiller.dbConnection = DatabaseConnection.CreateEmptyDb(textBox5.Text);
+            }
+
+            MetaDbFiller.CreateMetaTables();
+            MetaDbFiller.FillMetaDb();
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

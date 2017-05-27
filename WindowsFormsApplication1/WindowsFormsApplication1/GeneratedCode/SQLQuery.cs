@@ -11,7 +11,7 @@ using System.Text;
 
 public class SQLQuery
 {
-    public Dictionary<string, object[]> requiredValues;
+    public Dictionary<string, object[]> requiredValues = new Dictionary<string, object[]>();
     public int times;
 }
 

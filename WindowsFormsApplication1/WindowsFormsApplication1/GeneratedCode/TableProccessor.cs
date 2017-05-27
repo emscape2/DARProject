@@ -74,23 +74,25 @@ public class TableProccessor
                 Dictionary<string, double> IDFS = new Dictionary<string, double>();
                 foreach (var DF in Dfs)
                 {
-                    double idf;
+                    double idf;// TODO Deze berekening geeft nog waarden boven 1 
+                    
                     idf = Math.Abs(Math.Log10((double)numberofRows / (double)DF.Value));//kan heel goed door opencl gedaan
-
+                    
                     IDFS.Add(DF.Key, idf);
                 }
 
                 //write to table in metadb
-                MetaDbFiller.createMetaTable(column.Key, IDFS);
+                MetaDbFiller.IdfMetaTable(column.Key, IDFS);
             }
             else
             {
                 Dictionary<double, double> Idfs = getIdfsForNumerical(column.Key);
                 // write to table in metadb
-                MetaDbFiller.createMetaTable(column.Key, Idfs);
+                MetaDbFiller.IdfMetaTable(column.Key, Idfs);
             }
         }
-
+        //throw new NotImplementedException("meta table not yet implemented, check its idf for values");
+        int i = 0;
 
 	}
 
@@ -145,7 +147,7 @@ public class TableProccessor
     {
 
         int distinct = ColumnProperties[columname].distinctValues;
-        int intervals = (int)(10.0d * Math.Log(ColumnProperties[columname].distinctValues));//10 * log(distinct) intervals
+        int intervals = (int)(10.0d * Math.Log(ColumnProperties[columname].distinctValues));//10 * log(distinct) intervals zorgen dat je niet 0 krijgt
         double size = (ColumnProperties[columname].max - ColumnProperties[columname].min) / ((double)(intervals));
         ColumnProperties[columname].SetInterval(size);
         return size;
@@ -156,7 +158,7 @@ public class TableProccessor
         Dictionary<double, double> idfs = new Dictionary<double, double>();
         //grouped column values so the sqlite takes over the workload, might come at hand when extending this
         ColumnProperties properties = ColumnProperties[columname];
-        for (double d = properties.min; d < properties.max; d += TryGetIntervalSize(columname))
+        for (double d = properties.min; d <= properties.max; d += TryGetIntervalSize(columname))
         {
             idfs.Add(d, GetNumeralIdf(columname, d));
         }
@@ -172,29 +174,55 @@ public class TableProccessor
 
         //idf(t) = log (n / d) = log(n) - log(d) 
         //d = sum of e ^ (-0,5*f) ^ 2
-        //f = (ti -t ) / h 
+        //f = (ti -u ) / h 
         // where (i is the counter of the sum) AND (i E [0,...n]) AND h is the total bandwith
 
         double d = 0;
 
         foreach (DataRow row in column.Rows)
         {
-            //f = (ti -t ) / h 
+            //f = (ti -u ) / h 
             //f = afstand / max mogelijke afstand
             double f = (Convert.ToDouble(row[columname]) - u) / (properties.max - properties.min);
             
             //d = sum of e ^ (-0,5*f) ^ 2
-            double g = Math.Pow(Math.E, (Math.Pow(-0.5 * f, 2)));
+            double g = Math.Pow(Math.E, (-0.5 * Math.Pow( f, 2)));
             d += g;
         }
 
-        //idf(t) = log (n / d) = log(n) - log(d) 
-        //TODO DEZE REGEL HEEFT NOG GEEN CORRECTIE NAAR SCALAR IS WILDE SCHATTING
-        double idf = Math.Sqrt(Math.Abs( (Math.Log10(column.Rows.Count) - Math.Log10(d)))); //TODO: testen of je niet moet delen door log10*columns.rows.count om scalar te krijgen
+        //idf(t) = log (n / d) 
+        double idf = Math.Abs( 10 * (Math.Log(column.Rows.Count / d, Math.E))); //TODO: testen of je niet moet delen door log10*columns.rows.count om scalar te krijgen
 
         return idf;
     }
+    /*
+    public static double calculateQfIdfNumeral(string columnname, List<SQLQuery> Workload, int n, double u)
+    {
+        double qfidf = 0;
+        double qf = 0;
+        double idf = 0;
 
+        idf = GetNumeralIdf(columnname, u);
+        qf = WorkloadProcessor.getNumericalQFFromU(u, Workload, columnname, n);
+
+        qfidf = idf * qf;
+        return qfidf;
+
+    }
+
+    public static Dictionary<double, double> getQfIdfNumeral(string columnname, List<SQLQuery> Workload, int n, double u)
+    {
+        Dictionary<double, double> qfidf = new Dictionary<double, double>();
+        double value = calculateQfIdfNumeral(columnname, Workload, n, u);
+        ColumnProperties properties = ColumnProperties[columnname];
+
+        for (double d = properties.min; d <= properties.max; d += TryGetIntervalSize(columnname))
+        {
+            qfidf.Add(d, value);
+        }
+        return qfidf;
+    }
+    */
 
     /// <summary>
     /// Fixes all the columnProperties from the database
