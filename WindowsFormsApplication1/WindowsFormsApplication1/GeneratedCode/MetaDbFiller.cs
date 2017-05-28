@@ -59,51 +59,66 @@ public class MetaDbFiller
 
         TableProccessor.CalculateColumnProperties();
 
+        qf = new Dictionary<string, object>();
+        idfs = new Dictionary<string, object>();
+
         foreach (var columnProperty in TableProccessor.ColumnProperties)
         {
-            //de key van elke columnProperty, heeft naam van uit metaDB, opslaan als dataTable, kan met DBconnection. query metadb table
-            //query datatable, eerste kolom kan string of integer of real. de key van elke value. 
-            //De tabel hebben in elke geval per key een idf, qf, voor de kolom in value kan toevoegen in dictionary
-
-            //ik weet niet hoe lang dit nog gaat duren/ ik vol kan houden
-
-
-            //ahhh ik denk niet dat ik nog vol kan houden....
-            //faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.....
-            //verlos me.....
-
-            Dictionary<object, double> idfs = new Dictionary<object, double>();
-            Dictionary<object, double> qfs = new Dictionary<object, double>();
-
-            string name = columnProperty.Key; 
-            DataTable tab = dbConnection.QueryForDataTable("SELECT * FROM ");
-            
-            if(!columnProperty.Value.numerical.HasValue || columnProperty.Value.numerical.Value)
+            if (columnProperty.Key != "id") 
             {
-                Dictionary<double, double> idf = new Dictionary<double, double>();
-                Dictionary<double, double> qf = new Dictionary<double, double>();
+                string name = columnProperty.Key;
+                DataTable tab = dbConnection.QueryForDataTable("SELECT * FROM " + name);
 
-              
-                
+
+                if (!columnProperty.Value.numerical.HasValue || columnProperty.Value.numerical.Value)
+                {
+                    Dictionary<double, double> idf = new Dictionary<double, double>();
+                    Dictionary<double, double> qfs = new Dictionary<double, double>();
+
+                    foreach (DataRow row in tab.Rows)
+                    {
+                        idf.Add((double)row[0], (double)row[1]);
+                        qfs.Add((double)row[0], (double)row[2]);
+                    }
+                    idfs.Add(name, idf);
+                    qf.Add(name, qfs);
+
+                }
+                else
+                {
+                    Dictionary<string, double> idf = new Dictionary<string, double>();
+                    Dictionary<string, double> qfs = new Dictionary<string, double>();
+                    Dictionary<string, object> jacquard2 = new Dictionary<string, object>();
+
+                    foreach (DataRow row in tab.Rows)
+                    {
+                        idf.Add((string)row[0], (double)row[1]);
+                        qfs.Add((string)row[0], (double)row[2]);
+
+                        if (tab.Columns.Count > 3) 
+                        {
+                            Dictionary<string, double> jaq = new Dictionary<string, double>();
+
+                            for (int i = 3; i < tab.Columns.Count; i++)
+                            {
+                                jaq.Add((string)row.Table.Columns[i].ColumnName, (double)row[i]);
+                            }
+
+                            jacquard2.Add((string)row[0], jaq);
+
+                        }
+                    }
+
+                    idfs.Add(name, idf);
+                    qf.Add(name, qfs);
+
+                    if(tab.Columns.Count > 3)
+                    {
+                        jacquard.Add(name, jacquard2);
+                    }
+                }
             }
 
-            //okay name, idf, qf
-
-            /*ctionary<string, double> idfString = new Dictionary<string, double>();
-                   Dictionary<string, double> qfString = new Dictionary<string, double>();
-
-                   if (tab.Rows[0]. == string)
-                   {
-                       idfString.Add();
-                       qfString.Add();
-                   }
-                   else
-                   {
-                       idf.Add();
-                       qf.Add();
-                   } */
-
-            //check for jaccard, 
         }
 
     }

@@ -195,8 +195,7 @@ namespace WindowsFormsApplication1
             {
                 connect_To_SqlMeta(textBox5.Text);
                 MessageBox.Show("Connection succeeded");
-                MetaDbFiller.CreateMetaTables();
-                MetaDbFiller.FillMetaDb();
+                MetaDbFiller.LoadMetaDB();
                 MessageBox.Show("MetaDB filling Process succeeded");
             }
             else
@@ -212,6 +211,21 @@ namespace WindowsFormsApplication1
         private void textBox5_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog3 = new OpenFileDialog();
+            openFileDialog3.InitialDirectory = "c:\\";
+            openFileDialog3.Filter = "db files (*.db)|*.db|All files (*.*)|*.*";
+            openFileDialog3.FilterIndex = 2;
+            openFileDialog3.RestoreDirectory = true;
+            if (openFileDialog3.ShowDialog() == DialogResult.OK)
+            {
+                connect_To_SqlMeta(openFileDialog3.FileName);
+                MessageBox.Show("Connection succeeded");
+                MetaDbFiller.LoadMetaDB(); 
+            }
         }
     }
 }
