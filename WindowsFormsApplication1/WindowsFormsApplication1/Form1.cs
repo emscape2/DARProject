@@ -52,6 +52,7 @@ namespace WindowsFormsApplication1
                                 StreamReader reader = new StreamReader(myStream);
                                 PreProcessor.ProcessTables(reader);
                             }
+                            MessageBox.Show("Database has been filled");
                         }
                     }
                     catch (Exception ex)
@@ -84,16 +85,20 @@ namespace WindowsFormsApplication1
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
                 {
                     connect_To_Sql(openFileDialog1.FileName);
+                    MessageBox.Show("Database has been connected");
                 }
 
             }
             else if (File.Exists(textBox1.Text))
             {
                 connect_To_Sql(textBox1.Text);
+                MessageBox.Show("Database has been connected");
+
             }
             else
             {
                 TableProccessor.connection = DatabaseConnection.CreateEmptyDb(textBox1.Text);
+                MessageBox.Show("Database has been created");
             }
         }
 
@@ -138,6 +143,7 @@ namespace WindowsFormsApplication1
                             StreamReader reader = new StreamReader(myStream);
                             PreProcessor.ProccessWorkload(reader);
                         }
+                        MessageBox.Show("Workload has been loaded.");
                     }
                 }
                 catch (Exception ex)
@@ -152,18 +158,7 @@ namespace WindowsFormsApplication1
         private void button4_Click(object sender, EventArgs e)
         {
             PreProcessor.LoadTableAndPreprocess();
-            MessageBox.Show("Process succeeded");
-        }
-
-        private void textBox4_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            string ceq = textBox4.Text;
-            Proccessor.LoadAndProccessCeq(ceq);
+            MessageBox.Show("Idfs are Calculated.");
         }
 
         private void connect_To_SqlMeta(string dir)
@@ -213,26 +208,6 @@ namespace WindowsFormsApplication1
 
         }
 
-        private void button7_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog3 = new OpenFileDialog();
-            openFileDialog3.InitialDirectory = "c:\\";
-            openFileDialog3.Filter = "db files (*.db)|*.db|All files (*.*)|*.*";
-            openFileDialog3.FilterIndex = 2;
-            openFileDialog3.RestoreDirectory = true;
-            if (openFileDialog3.ShowDialog() == DialogResult.OK)
-            {
-                connect_To_SqlMeta(openFileDialog3.FileName);
-                MessageBox.Show("Connection succeeded");
-                MetaDbFiller.LoadMetaDB(); 
-            }
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void label4_Click(object sender, EventArgs e)
         {
 
@@ -244,6 +219,29 @@ namespace WindowsFormsApplication1
         }
 
         private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            Form2 settingsForm = new Form2();
+
+            // Show the settings form
+            settingsForm.Show();
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click_1(object sender, EventArgs e)
         {
 
         }

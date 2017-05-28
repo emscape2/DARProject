@@ -34,18 +34,15 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.button7 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.button9 = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBox1
@@ -59,7 +56,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(630, 51);
+            this.button1.Location = new System.Drawing.Point(633, 51);
             this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(113, 25);
@@ -110,20 +107,9 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(629, 424);
-            this.button5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(114, 26);
-            this.button5.TabIndex = 10;
-            this.button5.Text = "Execute ceq";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(633, 277);
+            this.button6.Location = new System.Drawing.Point(633, 278);
             this.button6.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(111, 27);
@@ -140,35 +126,6 @@
             this.textBox5.Size = new System.Drawing.Size(579, 22);
             this.textBox5.TabIndex = 13;
             this.textBox5.TextChanged += new System.EventHandler(this.textBox5_TextChanged);
-            // 
-            // textBox4
-            // 
-            this.textBox4.Location = new System.Drawing.Point(22, 424);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(579, 22);
-            this.textBox4.TabIndex = 11;
-            this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
-            // 
-            // button7
-            // 
-            this.button7.Location = new System.Drawing.Point(631, 357);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(112, 28);
-            this.button7.TabIndex = 14;
-            this.button7.Text = "Load metaDB";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(19, 394);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(120, 17);
-            this.label1.TabIndex = 15;
-            this.label1.Text = "3. Enter ceq input";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
@@ -201,15 +158,6 @@
     "mpty";
             this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(19, 357);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(281, 17);
-            this.label5.TabIndex = 19;
-            this.label5.Text = "2. Load filled metaDatabase to execute ceq";
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -218,6 +166,7 @@
             this.label6.Size = new System.Drawing.Size(265, 17);
             this.label6.TabIndex = 20;
             this.label6.Text = "3. Calculate IDFs of connected Database";
+            this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // label7
             // 
@@ -227,24 +176,44 @@
             this.label7.Size = new System.Drawing.Size(146, 17);
             this.label7.TabIndex = 21;
             this.label7.Text = "4. Load Workload File";
+            this.label7.Click += new System.EventHandler(this.label7_Click);
+            // 
+            // button9
+            // 
+            this.button9.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.button9.ForeColor = System.Drawing.SystemColors.Info;
+            this.button9.Location = new System.Drawing.Point(496, 329);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(237, 48);
+            this.button9.TabIndex = 23;
+            this.button9.Text = "Execute Queries";
+            this.button9.UseVisualStyleBackColor = false;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(19, 345);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(439, 17);
+            this.label1.TabIndex = 24;
+            this.label1.Text = "For Executing queries and dealing queries, Click on Execute Queries";
+            this.label1.Click += new System.EventHandler(this.label1_Click_1);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(758, 475);
+            this.ClientSize = new System.Drawing.Size(758, 389);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.button9);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.button7);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.button6);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.textBox2);
@@ -268,18 +237,15 @@
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.TextBox textBox5;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Label label1;
     }
 }
 
