@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Data;
 
+/*
+ * DatabaseConnection class is the bridge between C# and SQLite connection.
+ * Class contains several functions for C# program to send commands to SQLite 
+ */
+
 public class DatabaseConnection
 {
     public SQLiteConnection m_dbConnection;

@@ -9,6 +9,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+/*
+ * WorkLoadProcessor class calculates Similarity and Jaccard values
+ * to be used for filling the metaDatabase.
+ */
+
 public class WorkloadProcessor
 {
 
@@ -31,10 +36,7 @@ public class WorkloadProcessor
             {
                 GetNumericalQf(Workload, column.Key);
             }
-
         }
-
-
     }
 
     /// <summary>
@@ -78,7 +80,6 @@ public class WorkloadProcessor
             }
             jaquards.Add(idf.Key,jaquard);
         }
-
 
         MetaDbFiller.AddJaquardsMetaTable(columname, jaquards);
     }
@@ -276,6 +277,5 @@ public class WorkloadProcessor
         return qf;
 
     }
-
 }
 

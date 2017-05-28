@@ -10,6 +10,11 @@ using System.Linq;
 using System.Data;
 
 
+/*
+ * TableProcessor class calculates the DFs and IDF values from given Database for preprocessing the metaDatabase. 
+ * Also posseses functions to interpolate between 2 numerical values and calculating the idf value of numerical values. 
+ */
+
 public class TableProccessor
 {
 

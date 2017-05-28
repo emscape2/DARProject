@@ -7,6 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
+
+/*
+ * Processor class handles connection between several C# 
+ * programs for receiving input, executing SQlite statements on a metaDatabase and retrieving metaDatabase results. 
+ */
 namespace WindowsFormsApplication1
 {
     public class Proccessor

@@ -5,6 +5,13 @@ using System.Text;
 using System.IO;
 using System.Data.SQLite;
 
+
+/*
+ * QueryParser class posseses functions to parse a ceq statement and a SQLite statment.
+ * The ceq and SQlite statements will be converted to values which can be used by the C#
+ * program to retrieve results from a database. 
+ */
+
 namespace WindowsFormsApplication1
 {
     class QueryParser

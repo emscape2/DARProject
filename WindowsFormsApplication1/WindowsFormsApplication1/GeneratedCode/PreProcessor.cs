@@ -11,6 +11,10 @@ using System.Text;
 using System.IO;
 using System.Data.SQLite;
 
+/* PreProcessor class handles connection between several C# 
+ * programs for receiving input, preprocessing and filling the metaDatabase 
+ */
+
 public class PreProcessor
 {
     /// <summary>
@@ -19,7 +23,6 @@ public class PreProcessor
     /// <param name="reader"></param>
     public static void ProcessTables(StreamReader reader)
     {
-
         string rawSql = reader.ReadToEnd();
         TableProccessor.CreateAndFillTable(rawSql);
     }
