@@ -42,17 +42,20 @@ public class DatabaseConnection
         {
             using (SQLiteCommand objCommand = objConnection.CreateCommand())
             {
-                objConnection.Open();
+                if(objConnection.State != ConnectionState.Open)
+                {
+                    objConnection.Open();
+                }
                 objCommand.CommandText = rawSql;
                 objCommand.ExecuteNonQuery();
                 objConnection.Close();
-            }
-        }
+            } 
+        } 
     }
 
     public void runCreationSqlMeta(string rawSql)
     {
-        runCreationSql(rawSql);
+        runCreationSql(rawSql); 
     }
 
     /// <summary>

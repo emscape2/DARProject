@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq; 
 using System.Text;
 using System.Data.SQLite;
+using System.Globalization;
 
 public class MetaDbFiller
 {
@@ -57,14 +58,21 @@ public class MetaDbFiller
             }
             else
             {
-                //execute the createmetatable to create a qfidf table for the numerical column 
-                CreateMetaTable(columnProperties.Key, true);
+                if(columnProperties.Value.numerical != null && !columnProperties.Value.numerical.Value)
+                {
+                    //execute the createmetatable to create a qfidf table for the numerical column 
+                    CreateMetaTable(columnProperties.Key, false);
+                }
+                else
+                {
+                    CreateMetaTable(columnProperties.Key, true);
+                } 
             }   
         }
     }
 
     /// <summary>
-    /// creates a meta table for each column. if !Numerical then jaquard should be filled
+    /// creates a meta table for each column. if !Numerical then jaquard should be filled 
     /// </summary>
     /// <param name="columname"></param>
     /// <param name="numerical"></param>
@@ -78,22 +86,34 @@ public class MetaDbFiller
         if (numerical != false)
         {
             // create the create table statement with columns: name, idf, qf, possibly the jacquard columns
-            create = "CREATE TABLE " + columname + " (value REAL, idf REAL, qf REAL);";   
+            create = "CREATE TABLE " + columname + " (value REAL, idf REAL, qf REAL);";
         }
-        else
+        else if (jaquard)
         {
-            Dictionary<string, object[]> jacc = new Dictionary<string, object[]>();
-            foreach(var jaccardColumn in jacquard[columname] as Dictionary<string,object[]> )
+            foreach (var jaccardColumn in jacquard[columname] as Dictionary<string, object>)
             {
-                jaccardColumns += "," + jaccardColumn.Key + " REAL ";
+                if (jaccardColumn.Key == "mercedes-benz")
+                {
+                    jaccardColumns += ", mercedesBenz REAL ";
+                }
+                else
+                {
+                    jaccardColumns += "," + jaccardColumn.Key + " REAL ";
+                }
+
             }
 
             create = "CREATE TABLE " + columname + "(name varchar(30), idf REAL, qf REAL" + jaccardColumns + ");";
         }
+        else
+        {
+            // create the create table statement with columns: name, idf, qf
+            create = "CREATE TABLE " + columname + " (value varchar(30), idf REAL, qf REAL);"; 
+        }
         //unleash it on the dbconnection
         dbConnection.runCreationSqlMeta(create);
     }
-
+    
 
     //fill insert statement of whole metaDB
     public static void FillMetaDb()
@@ -108,21 +128,29 @@ public class MetaDbFiller
             }
             else
             {
-                //execute the fillmetatable to insert in a qfidf table for the numerical column 
-                FillMetaTable(columnProperties.Key, true);
+                if(columnProperties.Value.numerical != null && !columnProperties.Value.numerical.Value)
+                {
+                    //execute the fillmetatable to insert in a qfidf table for the numerical column 
+                    FillMetaTable(columnProperties.Key, false);
+                }
+                else
+                {
+                    FillMetaTable(columnProperties.Key, true);
+                }
+                //
             }
         }
     }
     //fill insert statement for one table
     public static void FillMetaTable(string columname, bool? numerical, bool jaquard = false)
     {
-        string insert = null;
-        string jaccard = null;
+        string insert = null; 
         string idfValue = null;
         string qfValue = "0";
 
+
         //foreach idf value 
-        if (numerical != false)
+        if (numerical != true)
         {
             foreach (var idf in idfs[columname] as Dictionary<string, double>)
             {
@@ -131,28 +159,48 @@ public class MetaDbFiller
                 {
                     if(qfs.Key.Equals(idf.Key))
                     {
-                        qfValue = qfs.Value.ToString();
+                        qfValue = qfs.Value.ToString(CultureInfo.InvariantCulture);
                     }
                 }
 
                 string name = idf.Key;
-                idfValue = idf.Value.ToString();
+                idfValue = idf.Value.ToString(CultureInfo.InvariantCulture);
+
+                /*  File dictionary??? ahhhhh? D: 
+                 */
+
 
                 //check for the jaquard values
                 if (jaquard != false)
                 {
-                    foreach(var jacc in jacquard[columname] as Dictionary<string, Dictionary<string, double>>)
+                    string key = idf.Key;
+                    string jaccard = null;
+
+
+                    if ((jacquard[columname] as Dictionary<string, object>).ContainsKey(key)) 
                     {
-                        Dictionary<string, Dictionary<string, double>> jaccValues = new Dictionary<string, Dictionary<string, double>>();
-                        jaccard += "," + jaccValues[jacc.Key][idf.Key].ToString();
-                    }  
-                     
-                    insert = "INSERT INTO " + columname + "VALUES (" + name + "," + idfValue + "," + qfValue + jaccard + ");";
+                        var ju = (jacquard[columname] as Dictionary<string, object>);
+
+                        Dictionary<string, double> juc = ju[key] as Dictionary<string, double>;
+                       
+                        foreach (var jac in juc) 
+                        {
+                            jaccard += "," + jac.Value.ToString(CultureInfo.InvariantCulture); 
+                        }  
+                    } 
+
+                    //
+                   
+                    insert = "INSERT INTO " + columname + " VALUES ( '" + name + "'," + idfValue + "," + qfValue + jaccard + ");";
                 }
                 else
                 {
-                    //put together a insert statement for non jaccard
-                    insert = "INSERT INTO " + columname + "VALUES (" + name + "," + idfValue + "," + qfValue + ");";
+                    if(columname != "id")
+                    {
+                        //put together a insert statement for non jaccard
+                        insert = "INSERT INTO " + columname + " VALUES (" + "'" + name + "'" + "," + idfValue + "," + qfValue + ");";
+                    }
+                    
                 }
 
                 //fire the statements at the dbconnection
@@ -161,24 +209,30 @@ public class MetaDbFiller
         }
         else
         {
-            foreach (var idf in idfs[columname] as Dictionary<double, double>)
+            if (columname != "id")
             {
-                //check if there is a qf related to the idf, if not, fill in zero
-                foreach (var qfs in qf[columname] as Dictionary<double, double>)
+                foreach (var idf in idfs[columname] as Dictionary<double, double>)
                 {
-                    if (qfs.Key.Equals(idf.Key))
+                    //check if there is a qf related to the idf, if not, fill in zero
+                    foreach (var qfs in qf[columname] as Dictionary<double, double>)
                     {
-                        qfValue = qfs.Value.ToString();
+                        if (qfs.Key.Equals(idf.Key))
+                        {
+                            if (!double.IsNaN(qfs.Value)) 
+                            {
+                                qfValue = qfs.Value.ToString(CultureInfo.InvariantCulture);
+                            }
+                        }
                     }
+
+                    //put together a insert statement for numerical
+                    string idValue = idf.Key.ToString(CultureInfo.InvariantCulture);
+                    idfValue = idf.Value.ToString(CultureInfo.InvariantCulture);
+                    insert = "INSERT INTO " + columname + " VALUES (" + idValue + ", " + idfValue + ", " + qfValue + ");";
+
+                    //fire the statements at the dbconnection
+                    dbConnection.runCreationSqlMeta(insert);
                 }
-
-                //put together a insert statement for numerical
-                string idValue = idf.Key.ToString();
-                idfValue = idf.Value.ToString(); 
-                insert = "INSERT INTO " + columname + "VALUES ("+ idValue + ", " + idfValue + ", " + qfValue + ");";
-
-                //fire the statements at the dbconnection
-                dbConnection.runCreationSqlMeta(insert);
             }
         }
 

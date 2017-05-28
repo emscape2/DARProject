@@ -152,6 +152,7 @@ namespace WindowsFormsApplication1
         private void button4_Click(object sender, EventArgs e)
         {
             PreProcessor.LoadTableAndPreprocess();
+            MessageBox.Show("Process succeeded");
         }
 
         private void textBox4_TextChanged(object sender, EventArgs e)
@@ -163,7 +164,6 @@ namespace WindowsFormsApplication1
         {
             string ceq = textBox4.Text;
             Proccessor.LoadAndProccessCeq(ceq);
-            MessageBox.Show(ceq);
         }
 
         private void connect_To_SqlMeta(string dir)
@@ -176,28 +176,37 @@ namespace WindowsFormsApplication1
             if (textBox5.Text == "")
             {
 
-                OpenFileDialog openFileDialog1 = new OpenFileDialog();
-                openFileDialog1.InitialDirectory = "c:\\";
-                openFileDialog1.Filter = "db files (*.db)|*.db|All files (*.*)|*.*";
-                openFileDialog1.FilterIndex = 2;
-                openFileDialog1.RestoreDirectory = true;
-                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                OpenFileDialog openFileDialog3 = new OpenFileDialog();
+                openFileDialog3.InitialDirectory = "c:\\";
+                openFileDialog3.Filter = "db files (*.db)|*.db|All files (*.*)|*.*";
+                openFileDialog3.FilterIndex = 2;
+                openFileDialog3.RestoreDirectory = true;
+                if (openFileDialog3.ShowDialog() == DialogResult.OK)
                 {
-                    connect_To_SqlMeta(openFileDialog1.FileName);
+                    connect_To_SqlMeta(openFileDialog3.FileName);
+                    MessageBox.Show("Connection succeeded");
+                    MetaDbFiller.CreateMetaTables();
+                    MetaDbFiller.FillMetaDb();
+                    MessageBox.Show("MetaDB filling Process succeeded");
                 }
 
             }
             else if (File.Exists(textBox5.Text))
             {
                 connect_To_SqlMeta(textBox5.Text);
+                MessageBox.Show("Connection succeeded");
+                MetaDbFiller.CreateMetaTables();
+                MetaDbFiller.FillMetaDb();
+                MessageBox.Show("MetaDB filling Process succeeded");
             }
             else
             {
                 MetaDbFiller.dbConnection = DatabaseConnection.CreateEmptyDb(textBox5.Text);
+                MessageBox.Show("New metaDB file made");
+                MetaDbFiller.CreateMetaTables();
+                MetaDbFiller.FillMetaDb();
+                MessageBox.Show("MetaDB filling Process succeeded");
             }
-
-            MetaDbFiller.CreateMetaTables();
-            MetaDbFiller.FillMetaDb();
         }
 
         private void textBox5_TextChanged(object sender, EventArgs e)
