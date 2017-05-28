@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Data.SQLite;
 using System.Globalization;
+using System.Data;
 
 public class MetaDbFiller
 {
@@ -18,6 +19,8 @@ public class MetaDbFiller
     public static Dictionary<string, object> qf = new Dictionary<string, object>();
     public static Dictionary<string, object> jacquard = new Dictionary<string, object>();
     public static DatabaseConnection dbConnection;
+
+    
     
     public static void IdfMetaTable(string columname, Dictionary<string, double> iDfs)
     {
@@ -44,6 +47,66 @@ public class MetaDbFiller
         jacquard.Add(columname, jaquards);
     }
     
+    //
+
+    public static void LoadMetaDB()
+    {
+        // 1, because if a database is loaded, it contains more than one value, 1 acts as failsafe 
+        if (idfs.Count > 1) 
+        {
+            return; 
+        }
+
+        TableProccessor.CalculateColumnProperties();
+
+        foreach (var columnProperty in TableProccessor.ColumnProperties)
+        {
+            //de key van elke columnProperty, heeft naam van uit metaDB, opslaan als dataTable, kan met DBconnection. query metadb table
+            //query datatable, eerste kolom kan string of integer of real. de key van elke value. 
+            //De tabel hebben in elke geval per key een idf, qf, voor de kolom in value kan toevoegen in dictionary
+
+            //ik weet niet hoe lang dit nog gaat duren/ ik vol kan houden
+
+
+            //ahhh ik denk niet dat ik nog vol kan houden....
+            //faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.....
+            //verlos me.....
+
+            Dictionary<object, double> idfs = new Dictionary<object, double>();
+            Dictionary<object, double> qfs = new Dictionary<object, double>();
+
+            string name = columnProperty.Key; 
+            DataTable tab = dbConnection.QueryForDataTable("SELECT * FROM ");
+            
+            if(!columnProperty.Value.numerical.HasValue || columnProperty.Value.numerical.Value)
+            {
+                Dictionary<double, double> idf = new Dictionary<double, double>();
+                Dictionary<double, double> qf = new Dictionary<double, double>();
+
+              
+                
+            }
+
+            //okay name, idf, qf
+
+            /*ctionary<string, double> idfString = new Dictionary<string, double>();
+                   Dictionary<string, double> qfString = new Dictionary<string, double>();
+
+                   if (tab.Rows[0]. == string)
+                   {
+                       idfString.Add();
+                       qfString.Add();
+                   }
+                   else
+                   {
+                       idf.Add();
+                       qf.Add();
+                   } */
+
+            //check for jaccard, 
+        }
+
+    }
 
     public static void CreateMetaTables()
     {
