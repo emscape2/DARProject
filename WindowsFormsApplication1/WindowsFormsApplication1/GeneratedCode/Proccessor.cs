@@ -18,6 +18,8 @@ namespace WindowsFormsApplication1
         public static void LoadAndProccessCeq(String ceq)
         {
             Dictionary<string, string> parsedCeq = QueryParser.parseInput(ceq);
+            DataTable rows = CheckIfSingleOption(parsedCeq);
+            
             DataTable table = TableProccessor.RetrieveTable();
             Dictionary<DataRow, double> ratings = new Dictionary< DataRow, double>( );
             Dictionary<string, Tuple<object, double, double>> elements = new Dictionary<string, Tuple<object, double, double>>();
@@ -29,6 +31,16 @@ namespace WindowsFormsApplication1
             {
                 k = Convert.ToInt32(parsedCeq["k"]);
                 parsedCeq.Remove("k");
+            }
+
+            if (rows != null)
+            {
+                parsedCeq = new Dictionary<string, string>();
+                foreach(DataColumn col in rows.Columns)
+                {
+                    if(col.ColumnName != "id")
+                        parsedCeq.Add(col.ColumnName, rows.Rows[0][col].ToString());
+                }
             }
 
             //prepare each element in the parsed CEQ for rating calculation
@@ -66,6 +78,31 @@ namespace WindowsFormsApplication1
                 Thread.Sleep(10);// for animation
             }
             form.BindData(resultTable);
+        }
+
+        public static DataTable CheckIfSingleOption(            Dictionary<string, string> ParsedSeq)
+        {
+
+            Dictionary<string, string> temp = new Dictionary<string, string>(ParsedSeq);
+            if (temp.ContainsKey("k"))
+                temp.Remove("k");
+            string SQL = "";
+            foreach(var el in temp)
+            {
+                SQL += " " + el.Key + " = '" + el.Value + "' AND ";
+            }
+            SQL = SQL.Remove(SQL.Length - 4);
+
+            DataTable table = TableProccessor.connection.QueryForDataTable("SELECT * FROM autompg WHERE" + SQL + " ;");
+            if (table.Rows.Count == 1)
+            {
+                return table;
+            }
+
+
+            return null;
+
+
         }
 
 
@@ -156,7 +193,7 @@ namespace WindowsFormsApplication1
                         return 0;//TODO recalculate when outside of saved values
                     }
                     double interval = properties.GetInterval();
-                    for (double d = properties.min; d < u; d += interval)
+                    for (double d = properties.min; d <= u; d += interval)
                     {
                         start = d;
                     }
@@ -199,7 +236,7 @@ namespace WindowsFormsApplication1
                         return 0;//TODO recalculate
                     }
                     double interval = properties.GetInterval();
-                    for (double d = properties.min; d < u; d += interval)
+                    for (double d = properties.min; d <= u; d += interval)
                     {
                         start = d;
                     }
